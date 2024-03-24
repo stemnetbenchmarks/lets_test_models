@@ -1,0 +1,285 @@
+{"task": "The city councilmen refused the demonstrators a permit because they feared violence.", "options": ["1. The city councilmen", "2. The demonstrators"], "answer_from_index_start_at_1": 1}
+{"task": "The city councilmen refused the demonstrators a permit because they advocated violence.", "options": ["1. The city councilmen", "2. The demonstrators"], "answer_from_index_start_at_1": 2}
+{"task": "The trophy doesn't fit into the brown suitcase because it is too large.", "options": ["1. the trophy", "2. the suitcase"], "answer_from_index_start_at_1": 1}
+{"task": "The trophy doesn't fit into the brown suitcase because it is too small.", "options": ["1. the trophy", "2. the suitcase"], "answer_from_index_start_at_1": 2}
+{"task": "Joan made sure to thank Susan for all the help she had recieved.", "options": ["1. Joan", "2. Susan"], "answer_from_index_start_at_1": 1}
+{"task": "Joan made sure to thank Susan for all the help she had given.", "options": ["1. Joan", "2. Susan"], "answer_from_index_start_at_1": 2}
+{"task": "Paul tried to call George on the phone, but he wasn't successful.", "options": ["1. Paul", "2. George"], "answer_from_index_start_at_1": 1}
+{"task": "Paul tried to call George on the phone, but he wasn't available.", "options": ["1. Paul", "2. George"], "answer_from_index_start_at_1": 2}
+{"task": "The lawyer asked the witness a question, but he was reluctant to repeat it.", "options": ["1. the lawyer", "2. the witness"], "answer_from_index_start_at_1": 1}
+{"task": "The lawyer asked the witness a question, but he was reluctant to answer it.", "options": ["1. the lawyer", "2. the witness"], "answer_from_index_start_at_1": 2}
+{"task": "The delivery truck zoomed by the school bus because it was going so fast.", "options": ["1. the delivery truck", "2. the school bus"], "answer_from_index_start_at_1": 1}
+{"task": "The delivery truck zoomed by the school bus because it was going so slow.", "options": ["1. the delivery truck", "2. the school bus"], "answer_from_index_start_at_1": 2}
+{"task": "Frank felt vindicated when his longtime rival Bill revealed that he was the winner of the competition.", "options": ["1. Frank", "2. Bill"], "answer_from_index_start_at_1": 1}
+{"task": "Frank felt crushed when his longtime rival Bill revealed that he was the winner of the competition.", "options": ["1. Frank", "2. Bill"], "answer_from_index_start_at_1": 2}
+{"task": "The man couldn't lift his son because he was so weak.", "options": ["1. The man", "2. The son"], "answer_from_index_start_at_1": 1}
+{"task": "The man couldn't lift his son because he was so heavy.", "options": ["1. The man", "2. The son"], "answer_from_index_start_at_1": 2}
+{"task": "The large ball crashed right through the table because it was made of steel.", "options": ["1. The large ball", "2. The table"], "answer_from_index_start_at_1": 1}
+{"task": "The large ball crashed right through the table because it was made of styrofoam.", "options": ["1. The large ball", "2. The table"], "answer_from_index_start_at_1": 2}
+{"task": "John couldn't see the stage with Billy in front of him because he is so short.", "options": ["1. John", "2. Billy"], "answer_from_index_start_at_1": 1}
+{"task": "John couldn't see the stage with Billy in front of him because he is so tall.", "options": ["1. John", "2. Billy"], "answer_from_index_start_at_1": 2}
+{"task": "Tom threw his schoolbag down to Ray after he reached the top of the stairs.", "options": ["1. Tom", "2. Ray"], "answer_from_index_start_at_1": 1}
+{"task": "Tom threw his schoolbag down to Ray after he reached the bottom of the stairs.", "options": ["1. Tom", "2. Ray"], "answer_from_index_start_at_1": 2}
+{"task": "Although they ran at about the same speed, Sue beat Sally because she had such a good start.", "options": ["1. Sue", "2. Sally"], "answer_from_index_start_at_1": 1}
+{"task": "Although they ran at about the same speed, Sue beat Sally because she had such a bad start.", "options": ["1. Sue", "2. Sally"], "answer_from_index_start_at_1": 2}
+{"task": "The sculpture rolled off the shelf because it wasn't anchored.", "options": ["1. The sculpture", "2. The shelf"], "answer_from_index_start_at_1": 1}
+{"task": "The sculpture rolled off the shelf because it wasn't level.", "options": ["1. The sculpture", "2. The shelf"], "answer_from_index_start_at_1": 2}
+{"task": "Sam's drawing was hung just above Tina's and it did look much better with another one below it.", "options": ["1. Sam's drawing", "2. Tina's drawing"], "answer_from_index_start_at_1": 1}
+{"task": "Sam's drawing was hung just above Tina's and it did look much better with another one above it.", "options": ["1. Sam's drawing", "2. Tina's drawing"], "answer_from_index_start_at_1": 2}
+{"task": "Anna did a lot better than her good friend Lucy on the test because she had studied so hard.", "options": ["1. Anna", "2. Lucy"], "answer_from_index_start_at_1": 1}
+{"task": "Anna did a lot worse than her good friend Lucy on the test because she had studied so hard.", "options": ["1. Anna", "2. Lucy"], "answer_from_index_start_at_1": 2}
+{"task": "The firemen arrived after the police because they were coming from so far away.", "options": ["1. The firemen", "2. The police"], "answer_from_index_start_at_1": 1}
+{"task": "The firemen arrived before the police because they were coming from so far away.", "options": ["1. The firemen", "2. The police"], "answer_from_index_start_at_1": 2}
+{"task": "Frank was upset with Tom because the toaster he had bought from him didn't work.", "options": ["1. Frank", "2. Tom"], "answer_from_index_start_at_1": 1}
+{"task": "Frank was upset with Tom because the toaster he had sold him didn't work.", "options": ["1. Frank", "2. Tom"], "answer_from_index_start_at_1": 2}
+{"task": "Jim yelled at Kevin because he was so upset.", "options": ["1. Jim", "2. Kevin"], "answer_from_index_start_at_1": 1}
+{"task": "Jim comforted Kevin because he was so upset.", "options": ["1. Jim", "2. Kevin"], "answer_from_index_start_at_1": 2}
+{"task": "The sack of potatoes had been placed above\nthe bag of flour, so it had to be moved first.", "options": ["1. The sack of potatoes", "2. The bag of flour"], "answer_from_index_start_at_1": 1}
+{"task": "The sack of potatoes had been placed below\nthe bag of flour, so it had to be moved first.", "options": ["1. The sack of potatoes", "2. The bag of flour"], "answer_from_index_start_at_1": 2}
+{"task": "Pete envies Martin although he is very successful.", "options": ["1. Pete", "2. Martin"], "answer_from_index_start_at_1": 1}
+{"task": "Pete envies Martin because he is very successful.", "options": ["1. Pete", "2. Martin"], "answer_from_index_start_at_1": 2}
+{"task": "The older students were bullying the younger ones, so we punished them .", "options": ["1. The older students", "2. The younger students"], "answer_from_index_start_at_1": 1}
+{"task": "The older students were bullying the younger ones, so we rescued them .", "options": ["1. The older students", "2. The younger students"], "answer_from_index_start_at_1": 2}
+{"task": "I poured water from the bottle into the cup until it was empty.", "options": ["1. the bottle", "2. the cup"], "answer_from_index_start_at_1": 1}
+{"task": "I poured water from the bottle into the cup until it was full.", "options": ["1. the bottle", "2. the cup"], "answer_from_index_start_at_1": 2}
+{"task": "Susan knows all about Ann's personal problems because she is nosy.", "options": ["1. Susan", "2. Ann"], "answer_from_index_start_at_1": 1}
+{"task": "Susan knows all about Ann's personal problems because she is indiscreet.", "options": ["1. Susan", "2. Ann"], "answer_from_index_start_at_1": 2}
+{"task": "Sid explained his theory to Mark but he couldn't convince him.", "options": ["1. Sid", "2. Mark"], "answer_from_index_start_at_1": 1}
+{"task": "Sid explained his theory to Mark but he couldn't understand him.", "options": ["1. Sid", "2. Mark"], "answer_from_index_start_at_1": 2}
+{"task": "Susan knew that Ann's son had been in a car accident, so she told her about it.", "options": ["1. Susan", "2. Ann"], "answer_from_index_start_at_1": 1}
+{"task": "Susan knew that Ann's son had been in a car accident, because she told her about it.", "options": ["1. Susan", "2. Ann"], "answer_from_index_start_at_1": 2}
+{"task": "Joe's uncle can still beat him at tennis, even though he is 30 years younger.", "options": ["1. Joe", "2. Joe's uncle"], "answer_from_index_start_at_1": 1}
+{"task": "Joe's uncle can still beat him at tennis, even though he is 30 years older.", "options": ["1. Joe", "2. Joe's uncle"], "answer_from_index_start_at_1": 2}
+{"task": "The painting in Mark's living room shows an oak tree. It is to the right of the bookcase.", "options": ["1. The painting", "2. The oak tree"], "answer_from_index_start_at_1": 1}
+{"task": "The painting in Mark's living room shows an oak tree. It is to the right of a house.", "options": ["1. The painting", "2. The oak tree"], "answer_from_index_start_at_1": 2}
+{"task": "There is a gap in the wall. You can see the garden through it .", "options": ["1. The gap", "2. The wall"], "answer_from_index_start_at_1": 1}
+{"task": "There is a gap in the wall. You can see the garden behind it .", "options": ["1. The gap", "2. The wall"], "answer_from_index_start_at_1": 2}
+{"task": "The drain is clogged with hair. It has to be cleaned.", "options": ["1. The drain", "2. The hair"], "answer_from_index_start_at_1": 1}
+{"task": "The drain is clogged with hair. It has to be removed.", "options": ["1. The drain", "2. The hair"], "answer_from_index_start_at_1": 2}
+{"task": "My meeting started at 4:00 and I needed to catch the train at 4:30, \nso there wasn't much time. Luckily, it was short, so it worked out.", "options": ["1. The meeting", "2. The train"], "answer_from_index_start_at_1": 1}
+{"task": "My meeting started at 4:00 and I needed to catch the train at 4:30, \nso there wasn't much time. Luckily, it was delayed, so it worked out.", "options": ["1. The meeting", "2. The train"], "answer_from_index_start_at_1": 2}
+{"task": "There is a pillar between me and the stage, and I can't see around it .", "options": ["1. The pillar", "2. The stage"], "answer_from_index_start_at_1": 1}
+{"task": "There is a pillar between me and the stage, and I can't see it .", "options": ["1. The pillar", "2. The stage"], "answer_from_index_start_at_1": 2}
+{"task": "They broadcast an announcement, but a subway came into the \nstation and I couldn't hear it .", "options": ["1. The announcement", "2. The subway"], "answer_from_index_start_at_1": 1}
+{"task": "They broadcast an announcement, but a subway came into the \nstation and I couldn't hear over it .", "options": ["1. The announcement", "2. The subway"], "answer_from_index_start_at_1": 2}
+{"task": "In the middle of the outdoor concert, the rain started falling, but it continued until 10.", "options": ["1. The concert", "2. The rain"], "answer_from_index_start_at_1": 1}
+{"task": "In the middle of the outdoor concert, the rain started falling, and it continued until 10.", "options": ["1. The concert", "2. The rain"], "answer_from_index_start_at_1": 2}
+{"task": "I used an old rag to clean the knife, and then I put it in the trash.", "options": ["1. The rag", "2. The knife"], "answer_from_index_start_at_1": 1}
+{"task": "I used an old rag to clean the knife, and then I put it in the drawer.", "options": ["1. The rag", "2. The knife"], "answer_from_index_start_at_1": 2}
+{"task": "Ann asked Mary what time the library closes, because she had forgotten.", "options": ["1. Ann", "2. Mary"], "answer_from_index_start_at_1": 1}
+{"task": "Ann asked Mary what time the library closes, but she had forgotten.", "options": ["1. Ann", "2. Mary"], "answer_from_index_start_at_1": 2}
+{"task": "I took the water bottle out of the backpack so that it would be handy.", "options": ["1. The water bottle", "2. The backpack"], "answer_from_index_start_at_1": 1}
+{"task": "I took the water bottle out of the backpack so that it would be lighter.", "options": ["1. The water bottle", "2. The backpack"], "answer_from_index_start_at_1": 2}
+{"task": "I couldn't put the pot on the shelf because it was too tall.", "options": ["1. The pot", "2. The shelf"], "answer_from_index_start_at_1": 1}
+{"task": "I couldn't put the pot on the shelf because it was too high.", "options": ["1. The pot", "2. The shelf"], "answer_from_index_start_at_1": 2}
+{"task": "I'm sure that my map will show this building; it is very good.", "options": ["1. The map", "2. The building"], "answer_from_index_start_at_1": 1}
+{"task": "I'm sure that my map will show this building; it is very famous.", "options": ["1. The map", "2. The building"], "answer_from_index_start_at_1": 2}
+{"task": "Bob paid for Charlie's college education. He is very generous.", "options": ["1. Bob", "2. Charlie"], "answer_from_index_start_at_1": 1}
+{"task": "Bob paid for Charlie's college education. He is very grateful.", "options": ["1. Bob", "2. Charlie"], "answer_from_index_start_at_1": 2}
+{"task": "Bob paid for Charlie's college education, but now Charlie acts as though\nit never happened. He is very hurt.", "options": ["1. Bob", "2. Charlie"], "answer_from_index_start_at_1": 1}
+{"task": "Bob paid for Charlie's college education, but now Charlie acts as though\nit never happened. He is very ungrateful.", "options": ["1. Bob", "2. Charlie"], "answer_from_index_start_at_1": 2}
+{"task": "Bob was playing cards with Adam and was way ahead. If Adam hadn't had a\nsudden run of good luck, he would have won.", "options": ["1. Bob", "2. Adam"], "answer_from_index_start_at_1": 1}
+{"task": "Bob was playing cards with Adam and was way ahead. If Adam hadn't had a\nsudden run of good luck, he would have lost.", "options": ["1. Bob", "2. Adam"], "answer_from_index_start_at_1": 2}
+{"task": "Adam can't leave work here until Bob arrives to replace him. If Bob had \nleft home for work on time, he would be gone by this time.", "options": ["1. Adam", "2. Bob"], "answer_from_index_start_at_1": 1}
+{"task": "Adam can't leave work here until Bob arrives to replace him. If Bob had \nleft home for work on time, he would be here by this time.", "options": ["1. Adam", "2. Bob"], "answer_from_index_start_at_1": 2}
+{"task": "If the con artist has succeeded in fooling Sam, he would have gotten a lot of money.", "options": ["1. The con artist", "2. Sam"], "answer_from_index_start_at_1": 1}
+{"task": "If the con artist has succeeded in fooling Sam, he would have lost a lot of money.", "options": ["1. The con artist", "2. Sam"], "answer_from_index_start_at_1": 2}
+{"task": "It was a summer afternoon, and the dog was sitting in the middle of the\nlawn. After a while, it got up and moved to a spot under the tree, \nbecause it was hot.", "options": ["1. The dog", "2. The spot under the tree"], "answer_from_index_start_at_1": 1}
+{"task": "It was a summer afternoon, and the dog was sitting in the middle of the\nlawn. After a while, it got up and moved to a spot under the tree, \nbecause it was cooler.", "options": ["1. The dog", "2. The spot under the tree"], "answer_from_index_start_at_1": 2}
+{"task": "The cat was lying by the mouse hole waiting for the mouse, but it was too impatient.", "options": ["1. The cat", "2. The mouse"], "answer_from_index_start_at_1": 1}
+{"task": "The cat was lying by the mouse hole waiting for the mouse, but it was too cautious.", "options": ["1. The cat", "2. The mouse"], "answer_from_index_start_at_1": 2}
+{"task": "Anne gave birth to a daughter last month. She is a very charming woman.", "options": ["1. Anne", "2. Anne's daughter"], "answer_from_index_start_at_1": 1}
+{"task": "Anne gave birth to a daughter last month. She is a very charming baby.", "options": ["1. Anne", "2. Anne's daughter"], "answer_from_index_start_at_1": 2}
+{"task": "Alice tried frantically to stop her daughter from chatting at\nthe party, leaving us to wonder why she was behaving so strangely.", "options": ["1. Alice", "2. Alice's daughter"], "answer_from_index_start_at_1": 1}
+{"task": "Alice tried frantically to stop her daughter from barking at\nthe party, leaving us to wonder why she was behaving so strangely.", "options": ["1. Alice", "2. Alice's daughter"], "answer_from_index_start_at_1": 2}
+{"task": "I saw Jim yelling at some guy in a military uniform with a huge red \nbeard. I don't know why he was, but he looked very unhappy.", "options": ["1. Jim", "2. the guy in uniform"], "answer_from_index_start_at_1": 1}
+{"task": "I saw Jim yelling at some guy in a military uniform with a huge red \nbeard. I don't know who he was, but he looked very unhappy.", "options": ["1. Jim", "2. the guy in uniform"], "answer_from_index_start_at_1": 2}
+{"task": "The fish ate the worm. It was hungry.", "options": ["1. The fish", "2. The worm"], "answer_from_index_start_at_1": 1}
+{"task": "The fish ate the worm. It was tasty.", "options": ["1. The fish", "2. The worm"], "answer_from_index_start_at_1": 2}
+{"task": "I was trying to open the lock with the key, but someone had filled the \nkeyhole with chewing gum, and I couldn't get it in.", "options": ["1. The key", "2. The chewing gum"], "answer_from_index_start_at_1": 1}
+{"task": "I was trying to open the lock with the key, but someone had filled the \nkeyhole with chewing gum, and I couldn't get it out.", "options": ["1. The key", "2. The chewing gum"], "answer_from_index_start_at_1": 2}
+{"task": "The dog chased the cat, which ran up a tree. It waited at the bottom.", "options": ["1. The dog", "2. The cat"], "answer_from_index_start_at_1": 1}
+{"task": "The dog chased the cat, which ran up a tree. It waited at the top.", "options": ["1. The dog", "2. The cat"], "answer_from_index_start_at_1": 2}
+{"task": "In the storm, the tree fell down and crashed through the roof of my \nhouse. Now, I have to get it removed.", "options": ["1. The tree", "2. The roof"], "answer_from_index_start_at_1": 1}
+{"task": "In the storm, the tree fell down and crashed through the roof of my \nhouse. Now, I have to get it repaired.", "options": ["1. The tree", "2. The roof"], "answer_from_index_start_at_1": 2}
+{"task": "The customer walked into the bank and stabbed one of the tellers. He was immediately taken to the police station.", "options": ["1. The customer", "2. The teller"], "answer_from_index_start_at_1": 1}
+{"task": "The customer walked into the bank and stabbed one of the tellers. He was immediately taken to the hospital.", "options": ["1. The customer", "2. The teller"], "answer_from_index_start_at_1": 2}
+{"task": "John was doing research in the library when he heard a man humming and \nwhistling. He was very annoyed.", "options": ["1. John", "2. The man"], "answer_from_index_start_at_1": 1}
+{"task": "John was doing research in the library when he heard a man humming and \nwhistling. He was very annoying.", "options": ["1. John", "2. The man"], "answer_from_index_start_at_1": 2}
+{"task": "John was jogging through the park when he saw a man juggling watermelons. He was very impressed.", "options": ["1. John", "2. The juggler"], "answer_from_index_start_at_1": 1}
+{"task": "John was jogging through the park when he saw a man juggling watermelons. He was very impressive.", "options": ["1. John", "2. The juggler"], "answer_from_index_start_at_1": 2}
+{"task": "Bob collapsed on the sidewalk. Soon he saw Carl coming to help. He was very ill.", "options": ["1. Bob", "2. Carl"], "answer_from_index_start_at_1": 1}
+{"task": "Bob collapsed on the sidewalk. Soon he saw Carl coming to help. He was very concerned.", "options": ["1. Bob", "2. Carl"], "answer_from_index_start_at_1": 2}
+{"task": "Sam and Amy are passionately in love, but Amy's parents are unhappy\nabout it, because they are fifteen.", "options": ["1. Sam and Amy", "2. Amy's parents"], "answer_from_index_start_at_1": 1}
+{"task": "Sam and Amy are passionately in love, but Amy's parents are unhappy\nabout it, because they are snobs.", "options": ["1. Sam and Amy", "2. Amy's parents"], "answer_from_index_start_at_1": 2}
+{"task": "Mark told Pete many lies about himself, which Pete included in his book. He should have been more  truthful.", "options": ["1. Mark", "2. Pete"], "answer_from_index_start_at_1": 1}
+{"task": "Mark told Pete many lies about himself, which Pete included in his book. He should have been more  skeptical.", "options": ["1. Mark", "2. Pete"], "answer_from_index_start_at_1": 2}
+{"task": "Joe has sold his house and bought a new one a few miles away. He will\nbe moving out of it on Thursday.", "options": ["1. The old house", "2. The new house"], "answer_from_index_start_at_1": 1}
+{"task": "Joe has sold his house and bought a new one a few miles away. He will\nbe moving into it on Thursday.", "options": ["1. The old house", "2. The new house"], "answer_from_index_start_at_1": 2}
+{"task": "Many people start to read Paul's books and can't put them down. They are gripped because Paul writes so well.", "options": ["1. People", "2. Paul's books"], "answer_from_index_start_at_1": 1}
+{"task": "Many people start to read Paul's books and can't put them down. They are popular because Paul writes so well.", "options": ["1. People", "2. Paul's books"], "answer_from_index_start_at_1": 2}
+{"task": "Mary took out her flute and played one of her favorite pieces. She\nhas had it since she was a child.", "options": ["1. The flute", "2. The piece"], "answer_from_index_start_at_1": 1}
+{"task": "Mary took out her flute and played one of her favorite pieces. She\nhas loved it since she was a child.", "options": ["1. The flute", "2. The piece"], "answer_from_index_start_at_1": 2}
+{"task": "Sam pulled up a chair to the piano, but it was broken, so he had to stand instead.", "options": ["1. The chair", "2. The piano"], "answer_from_index_start_at_1": 1}
+{"task": "Sam pulled up a chair to the piano, but it was broken, so he had to sing instead.", "options": ["1. The chair", "2. The piano"], "answer_from_index_start_at_1": 2}
+{"task": "Since it was raining, I carried the newspaper in my backpack to keep it dry.", "options": ["1. The newspaper", "2. The backpack"], "answer_from_index_start_at_1": 1}
+{"task": "Since it was raining, I carried the newspaper over my backpack to keep it dry.", "options": ["1. The newspaper", "2. The backpack"], "answer_from_index_start_at_1": 2}
+{"task": "Sara borrowed the book from the library because she needs it for an\narticle she is working on. She reads it when she gets home from work.", "options": ["1. The book", "2. The article"], "answer_from_index_start_at_1": 1}
+{"task": "Sara borrowed the book from the library because she needs it for an\narticle she is working on. She writes it when she gets home from work.", "options": ["1. The book", "2. The article"], "answer_from_index_start_at_1": 2}
+{"task": "This morning, Joey built a sand castle on the beach, and put a toy \nflag in the highest tower, but this afternoon the tide \nknocked it down.", "options": ["1. The sand castle", "2. The flag"], "answer_from_index_start_at_1": 1}
+{"task": "This morning, Joey built a sand castle on the beach, and put a toy \nflag in the highest tower, but this afternoon the wind \nknocked it down.", "options": ["1. The sand castle", "2. The flag"], "answer_from_index_start_at_1": 2}
+{"task": "Jane knocked on Susan's door, but there was no answer. She was disappointed.", "options": ["1. Jane", "2. Susan"], "answer_from_index_start_at_1": 1}
+{"task": "Jane knocked on Susan's door, but there was no answer. She was out.", "options": ["1. Jane", "2. Susan"], "answer_from_index_start_at_1": 2}
+{"task": "Jane knocked on the door, and Susan answered it. She invited her to come out.", "options": ["1. Jane", "2. Susan"], "answer_from_index_start_at_1": 1}
+{"task": "Jane knocked on the door, and Susan answered it. She invited her to come in.", "options": ["1. Jane", "2. Susan"], "answer_from_index_start_at_1": 2}
+{"task": "Sam took French classes from Adam, because he was eager to speak it fluently.", "options": ["1. Sam", "2. Adam"], "answer_from_index_start_at_1": 1}
+{"task": "Sam took French classes from Adam, because he was known to speak it fluently.", "options": ["1. Sam", "2. Adam"], "answer_from_index_start_at_1": 2}
+{"task": "The path to the lake was blocked, so we couldn't use it .", "options": ["1. The path", "2. The lake"], "answer_from_index_start_at_1": 1}
+{"task": "The path to the lake was blocked, so we couldn't reach it .", "options": ["1. The path", "2. The lake"], "answer_from_index_start_at_1": 2}
+{"task": "The sun was covered by a thick cloud all morning, but luckily, by the time\nthe picnic started, it was out.", "options": ["1. The sun", "2. The cloud"], "answer_from_index_start_at_1": 1}
+{"task": "The sun was covered by a thick cloud all morning, but luckily, by the time\nthe picnic started, it was gone.", "options": ["1. The sun", "2. The cloud"], "answer_from_index_start_at_1": 2}
+{"task": "We went to the lake, because a shark had been seen at the ocean beach, so it was a safer place to swim.", "options": ["1. The lake", "2. The ocean beach"], "answer_from_index_start_at_1": 1}
+{"task": "We went to the lake, because a shark had been seen at the ocean beach, so it was a dangerous place to swim.", "options": ["1. The lake", "2. The ocean beach"], "answer_from_index_start_at_1": 2}
+{"task": "Sam tried to paint a picture of shepherds with sheep, but they ended up looking more like golfers.", "options": ["1. The shepherds", "2. The sheep"], "answer_from_index_start_at_1": 1}
+{"task": "Sam tried to paint a picture of shepherds with sheep, but they ended up looking more like dogs.", "options": ["1. The shepherds", "2. The sheep"], "answer_from_index_start_at_1": 2}
+{"task": "Mary tucked her daughter Anne into bed, so that she could work.", "options": ["1. Mary", "2. Mary's daughter"], "answer_from_index_start_at_1": 1}
+{"task": "Mary tucked her daughter Anne into bed, so that she could sleep.", "options": ["1. Mary", "2. Mary's daughter"], "answer_from_index_start_at_1": 2}
+{"task": "Fred and Alice had very warm down coats, but they were not prepared for the cold in Alaska.", "options": ["1. Fred and Alice", "2. coats"], "answer_from_index_start_at_1": 1}
+{"task": "Fred and Alice had very warm down coats, but they were not enough for the cold in Alaska.", "options": ["1. Fred and Alice", "2. coats"], "answer_from_index_start_at_1": 2}
+{"task": "Thomson visited Cooper's grave in 1765. At that date he had been travelling for five years.", "options": ["1. Thomson", "2. Cooper"], "answer_from_index_start_at_1": 1}
+{"task": "Thomson visited Cooper's grave in 1765. At that date he had been dead for five years.", "options": ["1. Thomson", "2. Cooper"], "answer_from_index_start_at_1": 2}
+{"task": "Jackson was greatly influenced by Arnold, though he lived two centuries later.", "options": ["1. Jackson", "2. Arnold"], "answer_from_index_start_at_1": 1}
+{"task": "Jackson was greatly influenced by Arnold, though he lived two centuries earlier.", "options": ["1. Jackson", "2. Arnold"], "answer_from_index_start_at_1": 2}
+{"task": "I can't cut that tree down with that axe; it is too thick.", "options": ["1. The tree", "2. The axe"], "answer_from_index_start_at_1": 1}
+{"task": "I can't cut that tree down with that axe; it is too small.", "options": ["1. The tree", "2. The axe"], "answer_from_index_start_at_1": 2}
+{"task": "The foxes are getting in at night and attacking the chickens. I shall have\nto kill them .", "options": ["1. The foxes", "2. The chickens"], "answer_from_index_start_at_1": 1}
+{"task": "The foxes are getting in at night and attacking the chickens. I shall have\nto guard them .", "options": ["1. The foxes", "2. The chickens"], "answer_from_index_start_at_1": 2}
+{"task": "The foxes are getting in at night and attacking the chickens. They have gotten very bold.", "options": ["1. The foxes", "2. The chickens"], "answer_from_index_start_at_1": 1}
+{"task": "The foxes are getting in at night and attacking the chickens. They have gotten very nervous.", "options": ["1. The foxes", "2. The chickens"], "answer_from_index_start_at_1": 2}
+{"task": "Fred covered his eyes with his hands, because the wind was blowing sand\naround. He opened them when the wind stopped.", "options": ["1. His eyes", "2. His hands"], "answer_from_index_start_at_1": 1}
+{"task": "Fred covered his eyes with his hands, because the wind was blowing sand\naround. He lowered them when the wind stopped.", "options": ["1. His eyes", "2. His hands"], "answer_from_index_start_at_1": 2}
+{"task": "The actress used to be named Terpsichore, but she changed it to Tina a \nfew years ago, because she figured it was too hard to pronounce.", "options": ["1. Terpsichore", "2. Tina"], "answer_from_index_start_at_1": 1}
+{"task": "The actress used to be named Terpsichore, but she changed it to Tina a \nfew years ago, because she figured it was easier to pronounce.", "options": ["1. Terpsichore", "2. Tina"], "answer_from_index_start_at_1": 2}
+{"task": "Fred watched TV while George went out to buy groceries. After an hour he got up.", "options": ["1. Fred", "2. George"], "answer_from_index_start_at_1": 1}
+{"task": "Fred watched TV while George went out to buy groceries. After an hour he got back.", "options": ["1. Fred", "2. George"], "answer_from_index_start_at_1": 2}
+{"task": "Fred was supposed to run the dishwasher, but he put it off,  because\nhe wanted to watch TV. But the show turned out to be boring, so he\nchanged his mind and turned it on.", "options": ["1. The dishwasher", "2. The TV"], "answer_from_index_start_at_1": 1}
+{"task": "Fred was supposed to run the dishwasher, but he put it off,  because\nhe wanted to watch TV. But the show turned out to be boring, so he\nchanged his mind and turned it off.", "options": ["1. The dishwasher", "2. The TV"], "answer_from_index_start_at_1": 2}
+{"task": "Fred is the only man still alive who remembers my great-grandfather. He is a remarkable man.", "options": ["1. Fred", "2. My great-grandfather"], "answer_from_index_start_at_1": 1}
+{"task": "Fred is the only man still alive who remembers my great-grandfather. He was a remarkable man.", "options": ["1. Fred", "2. My great-grandfather"], "answer_from_index_start_at_1": 2}
+{"task": "Fred is the only man alive who still remembers my father as an infant.\nWhen Fred first saw my father, he was twelve years old.", "options": ["1. Fred", "2. My father"], "answer_from_index_start_at_1": 1}
+{"task": "Fred is the only man alive who still remembers my father as an infant.\nWhen Fred first saw my father, he was twelve months old.", "options": ["1. Fred", "2. My father"], "answer_from_index_start_at_1": 2}
+{"task": "In July, Kamtchatka declared war on Yakutsk. Since Yakutsk's army was much \nbetter equipped and ten times larger, they were defeated within weeks.", "options": ["1. Kamchatka", "2. Yakutsk"], "answer_from_index_start_at_1": 1}
+{"task": "In July, Kamtchatka declared war on Yakutsk. Since Yakutsk's army was much \nbetter equipped and ten times larger, they were victorious within weeks.", "options": ["1. Kamchatka", "2. Yakutsk"], "answer_from_index_start_at_1": 2}
+{"task": "Look! There is a minnow swimming right below that duck! It had better get away to safety fast!", "options": ["1. The minnow", "2. The duck"], "answer_from_index_start_at_1": 1}
+{"task": "Look! There is a shark swimming right below that duck! It had better get away to safety fast!", "options": ["1. The shark", "2. The duck"], "answer_from_index_start_at_1": 2}
+{"task": "Archaeologists have concluded that humans lived in Laputa 20,000 years ago. They hunted for evidence on the river banks.", "options": ["1. Archaeologists", "2. Prehistoric humans"], "answer_from_index_start_at_1": 1}
+{"task": "Archaeologists have concluded that humans lived in Laputa 20,000 years ago. They hunted for deer on the river banks.", "options": ["1. Archaeologists", "2. Prehistoric humans"], "answer_from_index_start_at_1": 2}
+{"task": "The scientists are studying three species of fish that have recently\nbeen found living in the Indian Ocean. They began two years ago.", "options": ["1. The scientists", "2. The fish"], "answer_from_index_start_at_1": 1}
+{"task": "The scientists are studying three species of fish that have recently\nbeen found living in the Indian Ocean. They appeared two years ago.", "options": ["1. The scientists", "2. The fish"], "answer_from_index_start_at_1": 2}
+{"task": "The journalists interviewed the stars of the new movie. They were very persistent, so the interview lasted for a long time.", "options": ["1. The journalists", "2. The stars"], "answer_from_index_start_at_1": 1}
+{"task": "The journalists interviewed the stars of the new movie. They were very cooperative, so the interview lasted for a long time.", "options": ["1. The journalists", "2. The stars"], "answer_from_index_start_at_1": 2}
+{"task": "The police arrested all of the gang members. They were trying to stop the drug trade in the neighborhood.", "options": ["1. The police", "2. The gang members"], "answer_from_index_start_at_1": 1}
+{"task": "The police arrested all of the gang members. They were trying to run the drug trade in the neighborhood.", "options": ["1. The police", "2. The gang members"], "answer_from_index_start_at_1": 2}
+{"task": "I put the cake away in the refrigerator. It has a lot of butter in it.", "options": ["1. The cake", "2. The refrigerator"], "answer_from_index_start_at_1": 1}
+{"task": "I put the cake away in the refrigerator. It has a lot of leftovers in it.", "options": ["1. The cake", "2. The refrigerator"], "answer_from_index_start_at_1": 2}
+{"task": "Sam broke both his ankles and he's walking with crutches. But a month\nor so from now they should be better.", "options": ["1. The ankles", "2. The crutches"], "answer_from_index_start_at_1": 1}
+{"task": "Sam broke both his ankles and he's walking with crutches. But a month\nor so from now they should be unnecessary.", "options": ["1. The ankles", "2. The crutches"], "answer_from_index_start_at_1": 2}
+{"task": "When the sponsors of the bill got to the town hall, they were surprised\nto find that the room was full of opponents. They were very much in the minority.", "options": ["1. The sponsors", "2. The opponents"], "answer_from_index_start_at_1": 1}
+{"task": "When the sponsors of the bill got to the town hall, they were surprised\nto find that the room was full of opponents. They were very much in the majority.", "options": ["1. The sponsors", "2. The opponents"], "answer_from_index_start_at_1": 2}
+{"task": "Everyone really loved the oatmeal cookies; only a few people liked the \nchocolate chip cookies. Next time, we should make more of them .", "options": ["1. The oatmeal cookies", "2. The chocolate chip cookies"], "answer_from_index_start_at_1": 1}
+{"task": "Everyone really loved the oatmeal cookies; only a few people liked the \nchocolate chip cookies. Next time, we should make fewer of them .", "options": ["1. The oatmeal cookies", "2. The chocolate chip cookies"], "answer_from_index_start_at_1": 2}
+{"task": "We had hoped to place copies of our newsletter on all the chairs in the\nauditorium, but there were simply not enough of them .", "options": ["1. copies of the newsletter", "2. chairs"], "answer_from_index_start_at_1": 1}
+{"task": "We had hoped to place copies of our newsletter on all the chairs in the\nauditorium, but there were simply too many of them .", "options": ["1. copies of the newsletter", "2. chairs"], "answer_from_index_start_at_1": 2}
+{"task": "I stuck a pin through a carrot. When I pulled the pin out, it left a hole.", "options": ["1. The pin", "2. The carrot"], "answer_from_index_start_at_1": 1}
+{"task": "I stuck a pin through a carrot. When I pulled the pin out, it had a hole.", "options": ["1. The pin", "2. The carrot"], "answer_from_index_start_at_1": 2}
+{"task": "I couldn't find a spoon, so I tried using a pen to stir my \ncoffee. But that turned out to be a bad idea, because it got full of coffee.", "options": ["1. The pen", "2. The coffee"], "answer_from_index_start_at_1": 1}
+{"task": "I couldn't find a spoon, so I tried using a pen to stir my \ncoffee. But that turned out to be a bad idea, because it got full of ink.", "options": ["1. The pen", "2. The coffee"], "answer_from_index_start_at_1": 2}
+{"task": "Steve follows Fred's example in everything. He admires him hugely.", "options": ["1. Steve", "2. Fred"], "answer_from_index_start_at_1": 1}
+{"task": "Steve follows Fred's example in everything. He influences him hugely.", "options": ["1. Steve", "2. Fred"], "answer_from_index_start_at_1": 2}
+{"task": "The table won't fit through the doorway because it is too wide.", "options": ["1. The table", "2. The doorway"], "answer_from_index_start_at_1": 1}
+{"task": "The table won't fit through the doorway because it is too narrow.", "options": ["1. The table", "2. The doorway"], "answer_from_index_start_at_1": 2}
+{"task": "Grace was happy to trade me her sweater for my jacket. She thinks it looks dowdy on her.", "options": ["1. The sweater", "2. The jacket"], "answer_from_index_start_at_1": 1}
+{"task": "Grace was happy to trade me her sweater for my jacket. She thinks it looks great on her.", "options": ["1. The sweater", "2. The jacket"], "answer_from_index_start_at_1": 2}
+{"task": "John hired Bill to take care of him .", "options": ["1. John", "2. Bill"], "answer_from_index_start_at_1": 1}
+{"task": "John hired himself out to Bill to take care of him .", "options": ["1. John", "2. Bill"], "answer_from_index_start_at_1": 2}
+{"task": "John promised Bill to leave, so an hour later he left.", "options": ["1. John", "2. Bill"], "answer_from_index_start_at_1": 1}
+{"task": "John ordered Bill to leave, so an hour later he left.", "options": ["1. John", "2. Bill"], "answer_from_index_start_at_1": 2}
+{"task": "Sam Goodman's biography of the Spartan general Xenophanes\nconveys a vivid sense of the difficulties he faced in his research.", "options": ["1. Goodman", "2. Xenophanes"], "answer_from_index_start_at_1": 1}
+{"task": "Sam Goodman's biography of the Spartan general Xenophanes\nconveys a vivid sense of the difficulties he faced in his childhood.", "options": ["1. Goodman", "2. Xenophanes"], "answer_from_index_start_at_1": 2}
+{"task": "Emma's mother had died long ago, and her education had been managed by an excellent woman as governess.", "options": ["1. Emma", "2. Emma's mother"], "answer_from_index_start_at_1": 1}
+{"task": "Emma's mother had died long ago, and her place had been taken by an excellent woman as governess.", "options": ["1. Emma", "2. Emma's mother"], "answer_from_index_start_at_1": 2}
+{"task": "Jane knocked on Susan's door but she did not get an answer.", "options": ["1. Jane", "2. Susan"], "answer_from_index_start_at_1": 1}
+{"task": "Jane knocked on Susan's door but she did not answer.", "options": ["1. Jane", "2. Susan"], "answer_from_index_start_at_1": 2}
+{"task": "Joe paid the detective after he received the final report on the case.", "options": ["1. Joe", "2. the detective"], "answer_from_index_start_at_1": 1}
+{"task": "Joe paid the detective after he delivered the final report on the case.", "options": ["1. Joe", "2. the detective"], "answer_from_index_start_at_1": 2}
+{"task": "Beth didn't get angry with Sally, who had cut her off, because she stopped and counted to ten.", "options": ["1. Beth", "2. Sally"], "answer_from_index_start_at_1": 1}
+{"task": "Beth didn't get angry with Sally, who had cut her off, because she stopped and apologized.", "options": ["1. Beth", "2. Sally"], "answer_from_index_start_at_1": 2}
+{"task": "Jim signaled the barman and gestured toward his empty glass", "options": ["1. Jim", "2. The barman"], "answer_from_index_start_at_1": 1}
+{"task": "Jim signaled the barman and gestured toward his bathroom key.", "options": ["1. Jim", "2. The barman"], "answer_from_index_start_at_1": 2}
+{"task": "Dan took the rear seat while Bill claimed the front because his \"Dibs!\" was slow.", "options": ["1. Dan", "2. Bill"], "answer_from_index_start_at_1": 1}
+{"task": "Dan took the rear seat while Bill claimed the front because his \"Dibs!\" was quicker.", "options": ["1. Dan", "2. Bill"], "answer_from_index_start_at_1": 2}
+{"task": "Tom said \"Check\" to Ralph as he moved his bishop.", "options": ["1. Tom", "2. Ralph"], "answer_from_index_start_at_1": 1}
+{"task": "Tom said \"Check\" to Ralph as he took his bishop.", "options": ["1. Tom", "2. Ralph"], "answer_from_index_start_at_1": 2}
+{"task": "As Andrea in the crop duster passed over Susan, she could see the landing strip.", "options": ["1. Andrea", "2. Susan"], "answer_from_index_start_at_1": 1}
+{"task": "As Andrea in the crop duster passed over Susan, she could see the landing gear.", "options": ["1. Andrea", "2. Susan"], "answer_from_index_start_at_1": 2}
+{"task": "Tom gave Ralph a lift to school so he wouldn't have to drive alone.", "options": ["1. Tom", "2. Ralph"], "answer_from_index_start_at_1": 1}
+{"task": "Tom gave Ralph a lift to school so he wouldn't have to walk.", "options": ["1. Tom", "2. Ralph"], "answer_from_index_start_at_1": 2}
+{"task": "Bill passed the half-empty plate to John because he was full.", "options": ["1. Bill", "2. John"], "answer_from_index_start_at_1": 1}
+{"task": "Bill passed the half-empty plate to John because he was hungry.", "options": ["1. Bill", "2. John"], "answer_from_index_start_at_1": 2}
+{"task": "Bill passed the gameboy to John because his turn was over.", "options": ["1. Bill", "2. John"], "answer_from_index_start_at_1": 1}
+{"task": "Bill passed the gameboy to John because his turn was next.", "options": ["1. Bill", "2. John"], "answer_from_index_start_at_1": 2}
+{"task": "The man lifted the boy onto his shoulders.", "options": ["1. The man", "2. The boy"], "answer_from_index_start_at_1": 1}
+{"task": "The man lifted the boy onto his bunk bed.", "options": ["1. The man", "2. The boy"], "answer_from_index_start_at_1": 2}
+{"task": "Stretching her back, the woman smiled at the girl.", "options": ["1. The woman", "2. The girl"], "answer_from_index_start_at_1": 1}
+{"task": "Patting her back, the woman smiled at the girl.", "options": ["1. The woman", "2. The girl"], "answer_from_index_start_at_1": 2}
+{"task": "Billy cried because Toby wouldn't accept his toy.", "options": ["1. Billy", "2. Toby"], "answer_from_index_start_at_1": 1}
+{"task": "Billy cried because Toby wouldn't share his toy.", "options": ["1. Billy", "2. Toby"], "answer_from_index_start_at_1": 2}
+{"task": "Lily spoke to Donna, breaking her silence.", "options": ["1. Lily", "2. Donna"], "answer_from_index_start_at_1": 1}
+{"task": "Lily spoke to Donna, breaking her concentration.", "options": ["1. Lily", "2. Donna"], "answer_from_index_start_at_1": 2}
+{"task": "When Tommy dropped his ice cream, Timmy giggled, so father gave him a sympathetic look.", "options": ["1. Tommy", "2. Timmy"], "answer_from_index_start_at_1": 1}
+{"task": "When Tommy dropped his ice cream, Timmy giggled, so father gave him a stern look.", "options": ["1. Tommy", "2. Timmy"], "answer_from_index_start_at_1": 2}
+{"task": "As Ollie carried Tommy up the long winding steps, his legs ached.", "options": ["1. Ollie", "2. Tommy"], "answer_from_index_start_at_1": 1}
+{"task": "As Ollie carried Tommy up the long winding steps, his legs dangled.", "options": ["1. Ollie", "2. Tommy"], "answer_from_index_start_at_1": 2}
+{"task": "The father carried the sleeping boy in his arms", "options": ["1. The father", "2. The boy"], "answer_from_index_start_at_1": 1}
+{"task": "The father carried the sleeping boy in his bassinet.", "options": ["1. The father", "2. The boy"], "answer_from_index_start_at_1": 2}
+{"task": "The woman held the girl against her chest", "options": ["1. The woman", "2. The girl"], "answer_from_index_start_at_1": 1}
+{"task": "The woman held the girl against her will.", "options": ["1. The woman", "2. The girl"], "answer_from_index_start_at_1": 2}
+{"task": "Pam's parents came home and found her having sex with her boyfriend, Paul. They were furious about it.", "options": ["1. Pam's parents", "2. Pam and Paul"], "answer_from_index_start_at_1": 1}
+{"task": "Pam's parents came home and found her having sex with her boyfriend, Paul. They were embarrassed about it.", "options": ["1. Pam's parents", "2. Pam and Paul"], "answer_from_index_start_at_1": 2}
+{"task": "Dr. Adams informed Kate that she had retired and presented several options for future treatment.", "options": ["1. Dr. Adams", "2. Kate"], "answer_from_index_start_at_1": 1}
+{"task": "Dr. Adams informed Kate that she had cancer and presented several options for future treatment.", "options": ["1. Dr. Adams", "2. Kate"], "answer_from_index_start_at_1": 2}
+{"task": "Dan had to stop Bill from toying with the injured bird. He is very compassionate.", "options": ["1. Dan", "2. Bill"], "answer_from_index_start_at_1": 1}
+{"task": "Dan had to stop Bill from toying with the injured bird. He is very cruel.", "options": ["1. Dan", "2. Bill"], "answer_from_index_start_at_1": 2}
+{"task": "George got free tickets to the play, but he gave them to Eric, even though he was particularly eager to see it.", "options": ["1. George", "2. Eric"], "answer_from_index_start_at_1": 1}
+{"task": "George got free tickets to the play, but he gave them to Eric, because he was particularly eager to see it.", "options": ["1. George", "2. Eric"], "answer_from_index_start_at_1": 2}
+{"task": "George got free tickets to the play, but he gave them to Eric, because he was not particularly eager to see it.", "options": ["1. George", "2. Eric"], "answer_from_index_start_at_1": 1}
+{"task": "Jane gave Joan candy because she wasn't hungry.", "options": ["1. Jane", "2. Joan"], "answer_from_index_start_at_1": 1}
+{"task": "Jane gave Joan candy because she was hungry.", "options": ["1. Jane", "2. Joan"], "answer_from_index_start_at_1": 2}
+{"task": "I tried to paint a picture of an orchard, with lemons in the lemon trees, \nbut they came out looking more like light bulbs.", "options": ["1. lemons", "2. lemon trees"], "answer_from_index_start_at_1": 1}
+{"task": "I tried to paint a picture of an orchard, with lemons in the lemon trees, \nbut they came out looking more like telephone poles.", "options": ["1. lemons", "2. lemon trees"], "answer_from_index_start_at_1": 2}
+{"task": "James asked Robert for a favor but he was refused.", "options": ["1. James", "2. Robert"], "answer_from_index_start_at_1": 1}
+{"task": "James asked Robert for a favor but he refused.", "options": ["1. James", "2. Robert"], "answer_from_index_start_at_1": 2}
+{"task": "Kirilov ceded the presidency to Shatov because he was less popular.", "options": ["1. Kirilov", "2. Shatov"], "answer_from_index_start_at_1": 1}
+{"task": "Kirilov ceded the presidency to Shatov because he was more popular.", "options": ["1. Kirilov", "2. Shatov"], "answer_from_index_start_at_1": 2}
+{"task": "Emma did not pass the ball to Janie although she saw that she was open.", "options": ["1. Emma", "2. Janie"], "answer_from_index_start_at_1": 1}
+{"task": "Emma did not pass the ball to Janie although she was open.", "options": ["1. Emma", "2. Janie"], "answer_from_index_start_at_1": 2}
+{"task": "I put the butterfly wing on the table and it broke.", "options": ["1. The butterfly wing", "2. The table"], "answer_from_index_start_at_1": 1}
+{"task": "I put the heavy book on the table and it broke.", "options": ["1. The heavy book", "2. The table"], "answer_from_index_start_at_1": 2}
+{"task": "Madonna fired her trainer because she couldn't stand her boyfriend.", "options": ["1. Madonna", "2. The trainer"], "answer_from_index_start_at_1": 1}
+{"task": "Madonna fired her trainer because she slept with her boyfriend.", "options": ["1. Madonna", "2. The trainer"], "answer_from_index_start_at_1": 2}
+{"task": "Madonna fired her trainer because she slept with her boyfriend.", "options": ["1. Madonna", "2. The trainer"], "answer_from_index_start_at_1": 1}
+{"task": "Madonna fired her trainer because she couldn't stand her boyfriend.", "options": ["1. Madonna", "2. The trainer"], "answer_from_index_start_at_1": 2}
+{"task": "Carol believed that Rebecca suspected that she had stolen the watch.", "options": ["1. Carol", "2. Rebecca"], "answer_from_index_start_at_1": 1}
+{"task": "Carol believed that Rebecca regretted that she had stolen the watch.", "options": ["1. Carol", "2. Rebecca"], "answer_from_index_start_at_1": 2}
+{"task": "This book introduced Shakespeare to Ovid; it was a major influence on his writing.", "options": ["1. Shakespeare", "2. Ovid"], "answer_from_index_start_at_1": 1}
+{"task": "This book introduced Shakespeare to Goethe; it was a major influence on his writing.", "options": ["1. Shakespeare", "2. Goethe"], "answer_from_index_start_at_1": 2}
+{"task": "This book introduced Shakespeare to Ovid; it was a fine selection of his writing.", "options": ["1. Shakespeare", "2. Ovid"], "answer_from_index_start_at_1": 2}
+{"task": "This book introduced Shakespeare to Goethe; it was a fine selection of his writing.", "options": ["1. Shakespeare", "2. Goethe"], "answer_from_index_start_at_1": 1}
+{"task": "Alice looked for her friend Jade in the crowd. Since she always\nhas good luck, Alice spotted her quickly.", "options": ["1. Alice", "2. Jade"], "answer_from_index_start_at_1": 1}
+{"task": "Alice looked for her friend Jade in the crowd. Since she always\nwears a red turban, Alice spotted her quickly.", "options": ["1. Alice", "2. Jade"], "answer_from_index_start_at_1": 2}
+{"task": "During a game of tag, Ethan chased Luke because he was \"it\".", "options": ["1. Ethan", "2. Luke"], "answer_from_index_start_at_1": 1}
+{"task": "During a game of tag, Ethan ran from Luke because he was \"it\".", "options": ["1. Ethan", "2. Luke"], "answer_from_index_start_at_1": 2}
+{"task": "At the Loebner competition the judges couldn't figure out which respondents\nwere the chatbots because they were so stupid.", "options": ["1. the judges", "2. the chatbots"], "answer_from_index_start_at_1": 1}
+{"task": "At the Loebner competition the judges couldn't figure out which respondents\nwere the chatbots because they were so advanced.", "options": ["1. the judges", "2. the chatbots"], "answer_from_index_start_at_1": 2}
+{"task": "The user changed his password from \"GrWQWu8JyC\" to\u00c2\u00a0\"willow-towered Canopy\nHuntertropic wrestles\" as it was easy to forget.", "options": ["1. GrWQWu8JyC", "2. willow-towered Canopy\nHuntertropic wrestles"], "answer_from_index_start_at_1": 1}
+{"task": "The user changed his password from \"GrWQWu8JyC\" to\u00c2\u00a0\"willow-towered Canopy\nHuntertropic wrestles\" as it was easy to remember.", "options": ["1. GrWQWu8JyC", "2. willow-towered Canopy\nHuntertropic wrestles"], "answer_from_index_start_at_1": 2}

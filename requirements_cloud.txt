@@ -1,0 +1,8 @@
+flake8
+pylint
+git+https://github.com/psf/black
+python-dotenv
+requests
+asyncio
+openai
+

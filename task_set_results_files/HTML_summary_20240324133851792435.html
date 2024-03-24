@@ -1,0 +1,878 @@
+
+        <html>
+        <head>
+            <title>CSV Summary</title>
+            <style>
+                table, th, td {
+                    border: 1px solid black;
+                    border-collapse: collapse;
+                    padding: 5px;
+                    text-align: center;
+                }
+            </style>
+        </head>
+        <body>
+            <h1>CSV Summary</h1>
+            <table>
+                <tr>
+                    <th>Score</th>
+                    <th>Selected Option</th>
+                    <th>Correct Option</th>
+                    <th>Task Failure Comment</th>
+                    <th>Name of Model</th>
+                    <th>Task File</th>
+                    <th>Task from Instructions</th>
+                    <th>Error Log</th>
+                    <th>Duration of Single Task</th>
+                    <th>Readable Timestamp</th>
+                </tr>
+        
+                            <tr>
+                                <td>0</td>
+                                <td>3</td>
+                                <td>1</td>
+                                <td>This is incorrect because it assumes that the drying time increases linearly with the number of shirts. However, the sun can dry all 10 shirts simultaneously, so the drying time remains the same as drying one shirt.</td>
+                                <td>mistral-7b-instruct</td>
+                                <td>error_explained_test_1.jsonl</td>
+                                <td>If it takes 30 minutes to dry one shirt in the sun(comma) how long does it take to dry 10 shirts in the sun simultaneously?</td>
+                                <td></td>
+                                <td>4_min__25.8_sec</td>
+                                <td>ymd_2024-03-23</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td></td>
+                                <td>mistral-7b-instruct</td>
+                                <td>error_explained_test_1.jsonl</td>
+                                <td>If it takes 30 minutes to dry one shirt in the sun(comma) how long does it take to dry 10 shirts in the sun simultaneously?</td>
+                                <td></td>
+                                <td>3_min__16.7_sec</td>
+                                <td>ymd_2024-03-23</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>0</td>
+                                <td>2</td>
+                                <td>1</td>
+                                <td>This is incorrect because cooking multiple pancakes simultaneously does not increase the cooking time. The griddle can cook all 8 pancakes at the same time.</td>
+                                <td>mistral-7b-instruct</td>
+                                <td>error_explained_test_1.jsonl</td>
+                                <td>If it takes 5 minutes to cook one pancake on a griddle(comma) how long does it take to cook 8 pancakes simultaneously using the same griddle?</td>
+                                <td></td>
+                                <td>3_min__32.2_sec</td>
+                                <td>ymd_2024-03-23</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>0</td>
+                                <td>3</td>
+                                <td>1</td>
+                                <td>This is incorrect because it assumes that the washing time increases linearly with the number of loads. However, the washing machine can wash all 4 loads simultaneously, so the washing time remains the same as washing one load.</td>
+                                <td>mistral-7b-instruct</td>
+                                <td>error_explained_test_1.jsonl</td>
+                                <td>If it takes 30 minutes to wash one load of laundry in the washing machine(comma) how long does it take to wash 4 loads of laundry simultaneously using the same washing machine at the same setting(comma) assuming the load fits in?</td>
+                                <td></td>
+                                <td>2_min__32.0_sec</td>
+                                <td>ymd_2024-03-23</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>1</td>
+                                <td>3</td>
+                                <td>3</td>
+                                <td></td>
+                                <td>mistral-7b-instruct</td>
+                                <td>error_explained_test_1.jsonl</td>
+                                <td>If it takes 30 minutes to wash one load of laundry in the washing machine(comma) how long does it take to wash 4 loads of laundry sequentially one at a time using the same washing machine?</td>
+                                <td></td>
+                                <td>4_min__16.4_sec</td>
+                                <td>ymd_2024-03-23</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>1</td>
+                                <td>3</td>
+                                <td>3</td>
+                                <td></td>
+                                <td>mistral-7b-instruct</td>
+                                <td>error_explained_test_1.jsonl</td>
+                                <td>If it takes 1 hour to complete one homework assignment(comma) how long does it take to complete 5 homework assignments?</td>
+                                <td></td>
+                                <td>2_min__18.5_sec</td>
+                                <td>ymd_2024-03-23</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>1</td>
+                                <td>3</td>
+                                <td>3</td>
+                                <td></td>
+                                <td>mistral-7b-instruct</td>
+                                <td>error_explained_test_1.jsonl</td>
+                                <td>If it takes 1 hour to complete one homework assignment(comma) how long does it take to complete 5 homework assignments?</td>
+                                <td></td>
+                                <td>5_min__29.9_sec</td>
+                                <td>ymd_2024-03-23</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td></td>
+                                <td>mistral-7b-instruct</td>
+                                <td>winograd_schemas_test_file.jsonl</td>
+                                <td>The city councilmen refused the demonstrators a permit because they feared violence.</td>
+                                <td></td>
+                                <td>1_min__51.5_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>2</td>
+                                <td></td>
+                                <td>mistral-7b-instruct</td>
+                                <td>winograd_schemas_test_file.jsonl</td>
+                                <td>The city councilmen refused the demonstrators a permit because they advocated violence.</td>
+                                <td></td>
+                                <td>1_min__46.8_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td></td>
+                                <td>mistral-7b-instruct</td>
+                                <td>winograd_schemas_test_file.jsonl</td>
+                                <td>The trophy doesn(single quote or apostrophe)t fit into the brown suitcase because it is too large.</td>
+                                <td></td>
+                                <td>1_min__53.7_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>1</td>
+                                <td>2</td>
+                                <td>2</td>
+                                <td></td>
+                                <td>mistral-7b-instruct</td>
+                                <td>winograd_schemas_test_file.jsonl</td>
+                                <td>The trophy doesn(single quote or apostrophe)t fit into the brown suitcase because it is too small.</td>
+                                <td></td>
+                                <td>2_min__26.3_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td></td>
+                                <td>mistral-7b-instruct</td>
+                                <td>winograd_schemas_test_file.jsonl</td>
+                                <td>Joan made sure to thank Susan for all the help she had recieved.</td>
+                                <td></td>
+                                <td>1_min__9.7_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>2</td>
+                                <td></td>
+                                <td>mistral-7b-instruct</td>
+                                <td>winograd_schemas_test_file.jsonl</td>
+                                <td>Joan made sure to thank Susan for all the help she had given.</td>
+                                <td></td>
+                                <td>1_min__10.0_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td></td>
+                                <td>mistral-7b-instruct</td>
+                                <td>winograd_schemas_test_file.jsonl</td>
+                                <td>Paul tried to call George on the phone(comma) but he wasn(single quote or apostrophe)t successful.</td>
+                                <td></td>
+                                <td>1_min__14.3_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>2</td>
+                                <td></td>
+                                <td>mistral-7b-instruct</td>
+                                <td>winograd_schemas_test_file.jsonl</td>
+                                <td>Paul tried to call George on the phone(comma) but he wasn(single quote or apostrophe)t available.</td>
+                                <td></td>
+                                <td>2_min__9.3_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td></td>
+                                <td>mistral-7b-instruct</td>
+                                <td>winograd_schemas_test_file.jsonl</td>
+                                <td>The lawyer asked the witness a question(comma) but he was reluctant to repeat it.</td>
+                                <td></td>
+                                <td>1_min__59.5_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td></td>
+                                <td>mistral-7b-instruct</td>
+                                <td>winograd_schemas_test_file.jsonl</td>
+                                <td>The city councilmen refused the demonstrators a permit because they feared violence.</td>
+                                <td></td>
+                                <td>2_min__24.6_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>2</td>
+                                <td></td>
+                                <td>mistral-7b-instruct</td>
+                                <td>winograd_schemas_test_file.jsonl</td>
+                                <td>The city councilmen refused the demonstrators a permit because they advocated violence.</td>
+                                <td></td>
+                                <td>1_min__45.9_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td></td>
+                                <td>mistral-7b-instruct</td>
+                                <td>winograd_schemas_test_file.jsonl</td>
+                                <td>The trophy doesn(single quote or apostrophe)t fit into the brown suitcase because it is too large.</td>
+                                <td></td>
+                                <td>2_min__8.1_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>2</td>
+                                <td></td>
+                                <td>mistral-7b-instruct</td>
+                                <td>winograd_schemas_test_file.jsonl</td>
+                                <td>The trophy doesn(single quote or apostrophe)t fit into the brown suitcase because it is too small.</td>
+                                <td></td>
+                                <td>1_min__19.0_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td></td>
+                                <td>mistral-7b-instruct</td>
+                                <td>my_test1.jsonl</td>
+                                <td>What is the capital of France?</td>
+                                <td></td>
+                                <td>1_min__20.8_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>1</td>
+                                <td>2</td>
+                                <td>2</td>
+                                <td></td>
+                                <td>mistral-7b-instruct</td>
+                                <td>my_test1.jsonl</td>
+                                <td>What is the largest planet in our solar system?</td>
+                                <td></td>
+                                <td>2_min__56.3_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>0</td>
+                                <td>The capital city of France is Paris.</td>
+                                <td>Paris</td>
+                                <td></td>
+                                <td>mistral-7b-instruct</td>
+                                <td>my_test_open_answer_2.jsonl</td>
+                                <td>What is the capital of France?</td>
+                                <td></td>
+                                <td>4_min__57.4_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>0</td>
+                                <td>final answer: Jupiter, with a diameter of approximately 143,000 kilometers (88,671 miles) and a mass of about 1.9 x 10^27 kg (4.3 x 10^25 lbs), is the largest planet in our solar system.</td>
+                                <td>Jupiter</td>
+                                <td></td>
+                                <td>mistral-7b-instruct</td>
+                                <td>my_test_open_answer_2.jsonl</td>
+                                <td>What is the largest planet in our solar system?</td>
+                                <td></td>
+                                <td>3_min__15.0_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>0</td>
+                                <td>3</td>
+                                <td>1</td>
+                                <td>This is incorrect because it assumes that the drying time increases linearly with the number of shirts. However, the sun can dry all 10 shirts simultaneously, so the drying time remains the same as drying one shirt.</td>
+                                <td>mistral-7b-instruct</td>
+                                <td>error_explained_test_1.jsonl</td>
+                                <td>If it takes 30 minutes to dry one shirt in the sun(comma) how long does it take to dry 10 shirts in the sun simultaneously?</td>
+                                <td></td>
+                                <td>5_min__53.7_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>0</td>
+                                <td>3</td>
+                                <td>1</td>
+                                <td>This is incorrect because it assumes that the drying time increases linearly with the number of shirts. However, the sun can dry all 10 shirts simultaneously, so the drying time remains the same as drying one shirt.</td>
+                                <td>mistral-7b-instruct</td>
+                                <td>error_explained_test_1.jsonl</td>
+                                <td>If it takes 30 minutes to dry one shirt in the sun(comma) how long does it take to dry 10 shirts in the sun simultaneously?</td>
+                                <td></td>
+                                <td>4_min__17.5_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>2</td>
+                                <td></td>
+                                <td>mistral-7b-instruct</td>
+                                <td>winograd_schemas_test_file.jsonl</td>
+                                <td>Paul tried to call George on the phone(comma) but he wasn(single quote or apostrophe)t available.</td>
+                                <td></td>
+                                <td>1_min__54.3_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td></td>
+                                <td>mistral-7b-instruct</td>
+                                <td>winograd_schemas_test_file.jsonl</td>
+                                <td>The lawyer asked the witness a question(comma) but he was reluctant to repeat it.</td>
+                                <td></td>
+                                <td>1_min__26.3_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>2</td>
+                                <td></td>
+                                <td>mistral-7b-instruct</td>
+                                <td>winograd_schemas_test_file.jsonl</td>
+                                <td>The lawyer asked the witness a question(comma) but he was reluctant to answer it.</td>
+                                <td></td>
+                                <td>1_min__51.8_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td></td>
+                                <td>mistral-7b-instruct</td>
+                                <td>winograd_schemas_test_file.jsonl</td>
+                                <td>The delivery truck zoomed by the school bus because it was going so fast.</td>
+                                <td></td>
+                                <td>1_min__21.4_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>2</td>
+                                <td></td>
+                                <td>mistral-7b-instruct</td>
+                                <td>winograd_schemas_test_file.jsonl</td>
+                                <td>The delivery truck zoomed by the school bus because it was going so slow.</td>
+                                <td></td>
+                                <td>1_min__25.3_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td></td>
+                                <td>mistral-7b-instruct</td>
+                                <td>winograd_schemas_test_file.jsonl</td>
+                                <td>Frank felt vindicated when his longtime rival Bill revealed that he was the winner of the competition.</td>
+                                <td></td>
+                                <td>1_min__32.7_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>2</td>
+                                <td></td>
+                                <td>mistral-7b-instruct</td>
+                                <td>winograd_schemas_test_file.jsonl</td>
+                                <td>Frank felt crushed when his longtime rival Bill revealed that he was the winner of the competition.</td>
+                                <td></td>
+                                <td>4_min__37.8_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td></td>
+                                <td>mistral-7b-instruct</td>
+                                <td>winograd_schemas_test_file.jsonl</td>
+                                <td>The man couldn(single quote or apostrophe)t lift his son because he was so weak.</td>
+                                <td></td>
+                                <td>1_min__49.7_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>2</td>
+                                <td></td>
+                                <td>mistral-7b-instruct</td>
+                                <td>winograd_schemas_test_file.jsonl</td>
+                                <td>The man couldn(single quote or apostrophe)t lift his son because he was so heavy.</td>
+                                <td></td>
+                                <td>1_min__37.4_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td></td>
+                                <td>mistral-7b-instruct</td>
+                                <td>winograd_schemas_test_file.jsonl</td>
+                                <td>The large ball crashed right through the table because it was made of steel.</td>
+                                <td></td>
+                                <td>2_min__12.8_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>0</td>
+                                <td>None</td>
+                                <td>1</td>
+                                <td></td>
+                                <td>stable-zephyr-3b</td>
+                                <td>my_test1.jsonl</td>
+                                <td>What is the capital of France?</td>
+                                <td></td>
+                                <td>2_min__20.3_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>0</td>
+                                <td>None</td>
+                                <td>2</td>
+                                <td></td>
+                                <td>stable-zephyr-3b</td>
+                                <td>my_test1.jsonl</td>
+                                <td>What is the largest planet in our solar system?</td>
+                                <td></td>
+                                <td>0_min__53.9_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>0</td>
+                                <td>plan</td>
+                                <td>Paris</td>
+                                <td></td>
+                                <td>stable-zephyr-3b</td>
+                                <td>my_test_open_answer_2.jsonl</td>
+                                <td>What is the capital of France?</td>
+                                <td></td>
+                                <td>2_min__11.1_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>1</td>
+                                <td>Jupiter</td>
+                                <td>Jupiter</td>
+                                <td></td>
+                                <td>stable-zephyr-3b</td>
+                                <td>my_test_open_answer_2.jsonl</td>
+                                <td>What is the largest planet in our solar system?</td>
+                                <td></td>
+                                <td>1_min__50.3_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td></td>
+                                <td>stable-zephyr-3b</td>
+                                <td>error_explained_test_1.jsonl</td>
+                                <td>If it takes 30 minutes to dry one shirt in the sun(comma) how long does it take to dry 10 shirts in the sun simultaneously?</td>
+                                <td>(left square bracket)(single quote or apostrophe)No select_best list.(single quote or apostrophe)(comma) (single quote or apostrophe)No select_best list.(single quote or apostrophe)(comma) (single quote or apostrophe)No select_best list.(single quote or apostrophe)(comma) (single quote or apostrophe)task_fail_counter more than retry_x_times(single quote or apostrophe)(right square bracket)</td>
+                                <td>4_min__7.7_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>0</td>
+                                <td>2</td>
+                                <td>1</td>
+                                <td>This is incorrect because drying multiple shirts simultaneously does not increase the drying time. The sun can dry all 10 shirts at the same time.</td>
+                                <td>stable-zephyr-3b</td>
+                                <td>error_explained_test_1.jsonl</td>
+                                <td>If it takes 30 minutes to dry one shirt in the sun(comma) how long does it take to dry 10 shirts in the sun simultaneously?</td>
+                                <td></td>
+                                <td>4_min__42.1_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>1</td>
+                                <td>2</td>
+                                <td>2</td>
+                                <td></td>
+                                <td>stable-zephyr-3b</td>
+                                <td>winograd_schemas_test_file.jsonl</td>
+                                <td>Paul tried to call George on the phone(comma) but he wasn(single quote or apostrophe)t available.</td>
+                                <td></td>
+                                <td>1_min__7.6_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>0</td>
+                                <td>2</td>
+                                <td>1</td>
+                                <td></td>
+                                <td>stable-zephyr-3b</td>
+                                <td>winograd_schemas_test_file.jsonl</td>
+                                <td>The lawyer asked the witness a question(comma) but he was reluctant to repeat it.</td>
+                                <td></td>
+                                <td>1_min__49.9_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>0</td>
+                                <td>3</td>
+                                <td>2</td>
+                                <td></td>
+                                <td>stable-zephyr-3b</td>
+                                <td>winograd_schemas_test_file.jsonl</td>
+                                <td>The lawyer asked the witness a question(comma) but he was reluctant to answer it.</td>
+                                <td></td>
+                                <td>4_min__52.4_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>0</td>
+                                <td>None</td>
+                                <td>1</td>
+                                <td></td>
+                                <td>stable-zephyr-3b</td>
+                                <td>winograd_schemas_test_file.jsonl</td>
+                                <td>The delivery truck zoomed by the school bus because it was going so fast.</td>
+                                <td></td>
+                                <td>2_min__6.6_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>0</td>
+                                <td>None</td>
+                                <td>2</td>
+                                <td></td>
+                                <td>stable-zephyr-3b</td>
+                                <td>winograd_schemas_test_file.jsonl</td>
+                                <td>The delivery truck zoomed by the school bus because it was going so slow.</td>
+                                <td></td>
+                                <td>2_min__41.6_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>0</td>
+                                <td>2</td>
+                                <td>1</td>
+                                <td></td>
+                                <td>stable-zephyr-3b</td>
+                                <td>winograd_schemas_test_file.jsonl</td>
+                                <td>Frank felt vindicated when his longtime rival Bill revealed that he was the winner of the competition.</td>
+                                <td></td>
+                                <td>1_min__59.7_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>0</td>
+                                <td>1</td>
+                                <td>2</td>
+                                <td></td>
+                                <td>stable-zephyr-3b</td>
+                                <td>winograd_schemas_test_file.jsonl</td>
+                                <td>Frank felt crushed when his longtime rival Bill revealed that he was the winner of the competition.</td>
+                                <td></td>
+                                <td>1_min__3.4_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>0</td>
+                                <td>None</td>
+                                <td>1</td>
+                                <td></td>
+                                <td>stable-zephyr-3b</td>
+                                <td>winograd_schemas_test_file.jsonl</td>
+                                <td>The man couldn(single quote or apostrophe)t lift his son because he was so weak.</td>
+                                <td></td>
+                                <td>1_min__47.0_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>0</td>
+                                <td>None</td>
+                                <td>2</td>
+                                <td></td>
+                                <td>stable-zephyr-3b</td>
+                                <td>winograd_schemas_test_file.jsonl</td>
+                                <td>The man couldn(single quote or apostrophe)t lift his son because he was so heavy.</td>
+                                <td></td>
+                                <td>1_min__25.8_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td></td>
+                                <td>stable-zephyr-3b</td>
+                                <td>winograd_schemas_test_file.jsonl</td>
+                                <td>The large ball crashed right through the table because it was made of steel.</td>
+                                <td></td>
+                                <td>1_min__19.6_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>0</td>
+                                <td>None</td>
+                                <td>1</td>
+                                <td></td>
+                                <td>mistral-tiny</td>
+                                <td>error_explained_test_1.jsonl</td>
+                                <td>If it takes 30 minutes to dry one shirt in the sun(comma) how long does it take to dry 10 shirts in the sun simultaneously?</td>
+                                <td></td>
+                                <td>0_min__4.0_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>0</td>
+                                <td>None</td>
+                                <td>1</td>
+                                <td></td>
+                                <td>mistral-tiny</td>
+                                <td>error_explained_test_1.jsonl</td>
+                                <td>If it takes 5 minutes to cook one pancake on a griddle(comma) how long does it take to cook 8 pancakes simultaneously using the same griddle?</td>
+                                <td></td>
+                                <td>0_min__4.0_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>0</td>
+                                <td>None</td>
+                                <td>1</td>
+                                <td></td>
+                                <td>mistral-tiny</td>
+                                <td>error_explained_test_1.jsonl</td>
+                                <td>If it takes 30 minutes to wash one load of laundry in the washing machine(comma) how long does it take to wash 4 loads of laundry simultaneously using the same washing machine at the same setting(comma) assuming the load fits in?</td>
+                                <td></td>
+                                <td>0_min__4.0_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>0</td>
+                                <td>None</td>
+                                <td>1</td>
+                                <td></td>
+                                <td>mistral-tiny</td>
+                                <td>error_explained_test_1.jsonl</td>
+                                <td>If it takes 30 minutes to dry one shirt in the sun(comma) how long does it take to dry 10 shirts in the sun simultaneously?</td>
+                                <td></td>
+                                <td>0_min__4.7_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>0</td>
+                                <td>None</td>
+                                <td>1</td>
+                                <td></td>
+                                <td>mistral-tiny</td>
+                                <td>error_explained_test_1.jsonl</td>
+                                <td>If it takes 5 minutes to cook one pancake on a griddle(comma) how long does it take to cook 8 pancakes simultaneously using the same griddle?</td>
+                                <td></td>
+                                <td>0_min__4.5_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>0</td>
+                                <td>None</td>
+                                <td>1</td>
+                                <td></td>
+                                <td>mistral-tiny</td>
+                                <td>error_explained_test_1.jsonl</td>
+                                <td>If it takes 30 minutes to wash one load of laundry in the washing machine(comma) how long does it take to wash 4 loads of laundry simultaneously using the same washing machine at the same setting(comma) assuming the load fits in?</td>
+                                <td></td>
+                                <td>0_min__4.4_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>0</td>
+                                <td>None</td>
+                                <td>1</td>
+                                <td></td>
+                                <td>mistral-tiny</td>
+                                <td>error_explained_test_1.jsonl</td>
+                                <td>If it takes 30 minutes to dry one shirt in the sun(comma) how long does it take to dry 10 shirts in the sun simultaneously?</td>
+                                <td></td>
+                                <td>0_min__4.7_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>0</td>
+                                <td>None</td>
+                                <td>1</td>
+                                <td></td>
+                                <td>mistral-tiny</td>
+                                <td>error_explained_test_1.jsonl</td>
+                                <td>If it takes 30 minutes to dry one shirt in the sun(comma) how long does it take to dry 10 shirts in the sun simultaneously?</td>
+                                <td></td>
+                                <td>0_min__0.0_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>0</td>
+                                <td>None</td>
+                                <td>1</td>
+                                <td></td>
+                                <td>mistral-tiny</td>
+                                <td>error_explained_test_1.jsonl</td>
+                                <td>If it takes 5 minutes to cook one pancake on a griddle(comma) how long does it take to cook 8 pancakes simultaneously using the same griddle?</td>
+                                <td></td>
+                                <td>0_min__0.0_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>0</td>
+                                <td>None</td>
+                                <td>1</td>
+                                <td></td>
+                                <td>mistral-tiny</td>
+                                <td>error_explained_test_1.jsonl</td>
+                                <td>If it takes 30 minutes to wash one load of laundry in the washing machine(comma) how long does it take to wash 4 loads of laundry simultaneously using the same washing machine at the same setting(comma) assuming the load fits in?</td>
+                                <td></td>
+                                <td>0_min__0.0_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td></td>
+                                <td>mistral-tiny</td>
+                                <td>error_explained_test_1.jsonl</td>
+                                <td>If it takes 30 minutes to dry one shirt in the sun(comma) how long does it take to dry 10 shirts in the sun simultaneously?</td>
+                                <td></td>
+                                <td>0_min__6.5_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>0</td>
+                                <td>3</td>
+                                <td>1</td>
+                                <td>This is incorrect because it assumes that the cooking time increases linearly with the number of pancakes. However, the griddle can cook all 8 pancakes simultaneously, so the cooking time remains the same as cooking one pancake.</td>
+                                <td>mistral-tiny</td>
+                                <td>error_explained_test_1.jsonl</td>
+                                <td>If it takes 5 minutes to cook one pancake on a griddle(comma) how long does it take to cook 8 pancakes simultaneously using the same griddle?</td>
+                                <td></td>
+                                <td>0_min__9.6_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+                            <tr>
+                                <td>0</td>
+                                <td>3</td>
+                                <td>1</td>
+                                <td>This is incorrect because it assumes that the washing time increases linearly with the number of loads. However, the washing machine can wash all 4 loads simultaneously, so the washing time remains the same as washing one load.</td>
+                                <td>mistral-tiny</td>
+                                <td>error_explained_test_1.jsonl</td>
+                                <td>If it takes 30 minutes to wash one load of laundry in the washing machine(comma) how long does it take to wash 4 loads of laundry simultaneously using the same washing machine at the same setting(comma) assuming the load fits in?</td>
+                                <td></td>
+                                <td>0_min__7.3_sec</td>
+                                <td>ymd_2024-03-24</td>
+                            </tr>
+                        
+            </table>
+        </body>
+        </html>
+        
