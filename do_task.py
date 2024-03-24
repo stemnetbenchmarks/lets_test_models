@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
+import os
 
 """
 Uncomment for cloud mode
 """
-import requests
-from dotenv import load_dotenv
-import os
-load_dotenv()
-openai_api_key = os.getenv("OPENAI_API_KEY")
-mistral_api_key = os.getenv("mistral_api_key")
+# import requests
+# from dotenv import load_dotenv
+# load_dotenv()
+# openai_api_key = os.getenv("OPENAI_API_KEY")
+# mistral_api_key = os.getenv("mistral_api_key")
 
 
 """
@@ -22,7 +22,7 @@ import sys
 from datetime import datetime, UTC
 import json  # Added missing import
 import re
-import os
+
 from call_llamacpp import gguf_api, mini_gguf_api
 from html_all_reports_summary_from_csv import html_for_all_reports
 from html_tally_score import html_for_all_score_tallies
@@ -5862,31 +5862,8 @@ task_file_config_dic_list = [
     #     "this_range_inclusive": 1,
     #     "use_offset_and_range": True,
     # },
-    # {
-    #     "file_name": "winograd_schemas_test_file.jsonl",
-    #     "file_type": ".jsonl",
-    #     "header_exits": False,
-    #     "file_structure": "",
-    #     "index_of_task": None,
-    #     "index_of_options": None,
-    #     # Fields
-    #     "task_field_name": "task",
-    #     "options_field_name": "options",
-    #     "scoring_field_name": "answer_from_index_start_at_1",
-    #     "error_comment_data_lookup_table_field_name": None,
-    #     "answer_option_choices_provided": True,
-    #     "validate_the_answer": True,
-    #     "use_history_context_dict_list": False,
-    #     "system_instructions": False,
-    #     "output_structure_mode": "pipes",
-    #     "input_state_context_mode": "one_string",
-    #     "ranked_choice_output_structure_mode": "pipes",
-    #     "this_offset": 7,
-    #     "this_range_inclusive": 9,
-    #     "use_offset_and_range": True,
-    # },
     {
-        "file_name": "error_explained_test_1.jsonl",
+        "file_name": "winograd_schemas_test_file.jsonl",
         "file_type": ".jsonl",
         "header_exits": False,
         "file_structure": "",
@@ -5896,7 +5873,7 @@ task_file_config_dic_list = [
         "task_field_name": "task",
         "options_field_name": "options",
         "scoring_field_name": "answer_from_index_start_at_1",
-        "error_comment_data_lookup_table_field_name": "error_comment_data_lookup_table",
+        "error_comment_data_lookup_table_field_name": None,
         "answer_option_choices_provided": True,
         "validate_the_answer": True,
         "use_history_context_dict_list": False,
@@ -5904,17 +5881,41 @@ task_file_config_dic_list = [
         "output_structure_mode": "pipes",
         "input_state_context_mode": "one_string",
         "ranked_choice_output_structure_mode": "pipes",
-        "this_offset": 1,
-        "this_range_inclusive": 2,
+        "this_offset": 10,
+        "this_range_inclusive": 11,
         "use_offset_and_range": True,
     },
+    # # Cloud
+    # {
+    #     "file_name": "error_explained_test_1.jsonl",
+    #     "file_type": ".jsonl",
+    #     "header_exits": False,
+    #     "file_structure": "",
+    #     "index_of_task": None,
+    #     "index_of_options": None,
+    #     # Fields
+    #     "task_field_name": "task",
+    #     "options_field_name": "options",
+    #     "scoring_field_name": "answer_from_index_start_at_1",
+    #     "error_comment_data_lookup_table_field_name": "error_comment_data_lookup_table",
+    #     "answer_option_choices_provided": True,
+    #     "validate_the_answer": True,
+    #     "use_history_context_dict_list": False,
+    #     "system_instructions": False,
+    #     "output_structure_mode": "pipes",
+    #     "input_state_context_mode": "one_string",
+    #     "ranked_choice_output_structure_mode": "pipes",
+    #     "this_offset": 1,
+    #     "this_range_inclusive": 2,
+    #     "use_offset_and_range": True,
+    # },
 ]
 
 #####################
 # Whole Task Choices
 #####################
 ai_local_or_cloud_mode = "gguf"
-ai_local_or_cloud_mode = "cloud"
+# ai_local_or_cloud_mode = "cloud"
 number_of_preliminary_drafts = 2
 number_of_ranked_votes = 1
 retry_x_times = 2
@@ -5922,9 +5923,10 @@ retry_x_times = 2
 ##############
 # Pick Models
 ##############
+# list_of_models = ["mistral-tiny"]
 # list_of_models = ["tinyllama", "mistral-7b-instruct", "stablelm-zephyr-3b"]
 list_of_models = ["stable-zephyr-3b"]
-list_of_models = ["mistral-tiny"]
+
 
 
 
