@@ -2460,7 +2460,12 @@ def make_score_tally(directory_path):
                 (score_data["total"] / total_scores) * 100 if total_scores > 0 else 0
             )
             # where total is correct number and count is...the total
-            score = f"{score_data["total"]} / {score_data["count"]}"
+
+            # for stone-age python:
+            score_total_item = score_data["total"]
+            score_count_item = score_data["count"]
+
+            score = f"{score_total_item} / {score_count_item}"
             task_files = ", ".join(score_data["task_files"])  # Join task_files into a comma-separated string
             report_line = [percentage, model_name, task_files, score]
             report_list.append(report_line)
