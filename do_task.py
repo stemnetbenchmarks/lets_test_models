@@ -2934,7 +2934,7 @@ def general_task_call_api_within_structure_check(
 
         except Exception as e:
             jsonchecked_translation = None
-            print(f"Failed: {str(e)}")
+            print(f"\n\nMaybe incorrect model choice, use_this_model -> {use_this_model}: general_task_call_api_within_structure_check Failed: {str(e)}")
 
         if not dict_str:
             print(
@@ -5928,9 +5928,9 @@ retry_x_times = 2
 ##############
 # Pick Models
 ##############
-# list_of_models = ["mistral-tiny"]
+list_of_models = ["mistral-tiny"]
 # list_of_models = ["tinyllama", "mistral-7b-instruct", "stablelm-zephyr-3b"]
-list_of_models = ["stable-zephyr-3b"]
+# list_of_models = ["stable-zephyr-3b"]
 
 
 
