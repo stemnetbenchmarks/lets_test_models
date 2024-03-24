@@ -132,3 +132,8 @@ ai_local_or_cloud_mode = "gguf"
 
 4. uncomment the library installs for cloud
 (turned off for ease of gguf use without an env)
+
+
+https://github.com/lineality/anthropic_cloud_api_interfaces
+
+https://github.com/lineality/simple_mistral_api_context_history_manager 

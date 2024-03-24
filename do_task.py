@@ -4,13 +4,13 @@ import os
 """
 Uncomment for cloud mode
 """
-# import requests
-# from dotenv import load_dotenv
-# load_dotenv()
-# openai_api_key = os.getenv("OPENAI_API_KEY")
-# mistral_api_key = os.getenv("mistral_api_key")
-
-
+import requests
+import anthropic
+from dotenv import load_dotenv
+load_dotenv()
+openai_api_key = os.getenv("OPENAI_API_KEY")
+mistral_api_key = os.getenv("mistral_api_key")
+anthropic_api_key = os.getenv("anthropic_api_key")
 """
 Offline and Vanilla OK!
 """
@@ -914,13 +914,6 @@ def find_matching_file_paths(file_paths, target_file_name):
     return matching_paths[0]
 
 
-# Helper Function
-def prompt_user(user_input, context_history):
-
-    context_history.append(segment_for_adding_to_context_history("user", user_input))
-
-    return context_history
-
 
 # Helper Function
 def one_response_to_user(user_input, context_history, use_this_model):
@@ -997,6 +990,75 @@ def replace_special_characters_with_text(input_item):
     return input_item
 
 
+
+"""
+anthropic
+"""
+
+
+def simple_ask_anthropic_py(input_string, this_model):
+
+    """
+    import anthropic
+    """
+
+    client = anthropic.Anthropic(
+        # defaults to os.environ.get("ANTHROPIC_API_KEY")
+        api_key=anthropic_api_key,
+    )
+    message = client.messages.create(
+        model=this_model,
+        max_tokens=1024,
+        messages=[
+            {"role": "user", "content": input_string}
+        ]
+    )
+
+    # print(message.content)
+
+    answer = message.content[0].text
+
+    # print(answer)
+
+    return answer
+
+
+def simple_ask_anthropic(input_string, this_model):
+    """
+    "claude-2.1"
+    "claude-3-opus-20240229",
+    
+    """
+
+    headers = {
+        "x-api-key": anthropic_api_key,
+        "anthropic-version": "2023-06-01",
+        "content-type": "application/json"
+    }
+
+    data = {
+        "model": this_model,
+        "max_tokens_to_sample": 1024,
+        "prompt": f"\n\nHuman: {input_string}\n\nAssistant:"
+    }
+
+    response = requests.post("https://api.anthropic.com/v1/complete", headers=headers, json=data)
+
+    if response.status_code == 200:
+        result = response.json()
+        answer = result["completion"]
+    else:
+        print(f"Request failed with status code {response.status_code}")
+
+        answer = response.text
+
+
+    # print(answer)
+
+    return answer
+
+
+
 """
 Mistral
 """
@@ -1057,6 +1119,7 @@ def print_rec_ai(response, context_history):
     context_history.append(new_comment)
 
     return assistant_says, context_history
+
 
 def add_to_context_history(role, comment):
 
@@ -2456,14 +2519,16 @@ def make_score_tally(directory_path):
         # Prepare report lines excluding the header https://stackoverflow.com/questions/2363731/how-to-append-a-new-row-to-an-old-csv-file-in-python
         report_list = []
         for model_name, score_data in report_data_dict.items():
-            percentage = (
-                (score_data["total"] / total_scores) * 100 if total_scores > 0 else 0
-            )
-            # where total is correct number and count is...the total
-
             # for stone-age python:
             score_total_item = score_data["total"]
             score_count_item = score_data["count"]
+
+            percentage = (
+                (score_total_item / score_count_item) * 100 if total_scores > 0 else 0
+            )
+            # where total is correct number and count is...the total
+
+
 
             score = f"{score_total_item} / {score_count_item}"
             task_files = ", ".join(score_data["task_files"])  # Join task_files into a comma-separated string
@@ -2724,6 +2789,13 @@ def call_api_within_structure_check(
         "mistral-small",
         "mistral-large-latest",
     ]
+
+    anthropic_model_list = [
+        "claude-2.1",
+        "claude-3-opus-20240229",
+    ]
+
+
     # /home/oops/jan/models/mistral-ins-7b-q4/mistral-7b-instruct-v0.2.Q4_K_M.gguf
 
     # see https://platform.openai.com/docs/guides/text-generation
@@ -2783,9 +2855,17 @@ def call_api_within_structure_check(
             ################
             # for cloud api
             ################
+
+            # mistral
             elif use_this_model in mistal_model_list:
                 print(f"Mistral api selected...{use_this_model}")
                 dict_str = ask_mistral_model(context_history, use_this_model)
+
+            # anthropic
+            elif use_this_model in anthropic_model_list:
+                print(f"Anthropic api selected...{use_this_model}")
+                dict_str = simple_ask_anthropic_py(context_history, use_this_model)
+
 
             elif use_this_model in open_ai_model_list:
                 print(f"openAI api selected...{use_this_model}")
@@ -2852,6 +2932,11 @@ def general_task_call_api_within_structure_check(
         "mistral-small",
         "mistral-large-latest",
     ]
+
+    anthropic_model_list = [
+        "claude-2.1",
+        "claude-3-opus-20240229",
+    ]
     # /home/oops/jan/models/mistral-ins-7b-q4/mistral-7b-instruct-v0.2.Q4_K_M.gguf
 
     # see https://platform.openai.com/docs/guides/text-generation
@@ -2913,9 +2998,15 @@ def general_task_call_api_within_structure_check(
             ################
             # for cloud api
             ################
+            # mistral
             elif use_this_model in mistal_model_list:
                 print(f"Mistral api selected...{use_this_model}")
-                dict_str = simple_ask_mistral_cloud(context_history, use_this_model)
+                dict_str = ask_mistral_model(context_history, use_this_model)
+
+            # anthropic
+            elif use_this_model in anthropic_model_list:
+                print(f"Anthropic api selected...{use_this_model}")
+                dict_str = simple_ask_anthropic_py(context_history, use_this_model)
 
             elif use_this_model in open_ai_model_list:
                 print(f"openAI api selected...{use_this_model}")
@@ -2984,6 +3075,12 @@ def number_call_api_within_structure_check(
         "mistral-small",
         "mistral-large-latest",
     ]
+
+    anthropic_model_list = [
+        "claude-2.1",
+        "claude-3-opus-20240229",
+    ]
+
     # /home/oops/jan/models/mistral-ins-7b-q4/mistral-7b-instruct-v0.2.Q4_K_M.gguf
 
     # see https://platform.openai.com/docs/guides/text-generation
@@ -3042,9 +3139,15 @@ def number_call_api_within_structure_check(
             ################
             # for cloud api
             ################
+            # mistral
             elif use_this_model in mistal_model_list:
                 print(f"Mistral api selected...{use_this_model}")
                 dict_str = ask_mistral_model(context_history, use_this_model)
+
+            # anthropic
+            elif use_this_model in anthropic_model_list:
+                print(f"Anthropic api selected...{use_this_model}")
+                dict_str = simple_ask_anthropic_py(context_history, use_this_model)
 
             elif use_this_model in open_ai_model_list:
                 print(f"openAI api selected...{use_this_model}")
@@ -3102,6 +3205,11 @@ def task_number_call_api_within_structure_check(
         "mistral-tiny",
         "mistral-small",
         "mistral-large-latest",
+    ]
+
+    anthropic_model_list = [
+        "claude-2.1",
+        "claude-3-opus-20240229",
     ]
     # /home/oops/jan/models/mistral-ins-7b-q4/mistral-7b-instruct-v0.2.Q4_K_M.gguf
 
@@ -3163,9 +3271,15 @@ def task_number_call_api_within_structure_check(
             ################
             # for cloud api
             ################
+            # mistral
             elif use_this_model in mistal_model_list:
                 print(f"Mistral api selected...{use_this_model}")
-                dict_str = simple_ask_mistral_cloud(context_history, use_this_model)
+                dict_str = ask_mistral_model(context_history, use_this_model)
+
+            # anthropic
+            elif use_this_model in anthropic_model_list:
+                print(f"Anthropic api selected...{use_this_model}")
+                dict_str = simple_ask_anthropic_py(context_history, use_this_model)
 
 
             elif use_this_model in open_ai_model_list:
@@ -3227,6 +3341,12 @@ def crawler_call_api_within_json_structure_check(
         "mistral-small",
         "mistral-large-latest",
     ]
+
+    anthropic_model_list = [
+        "claude-2.1",
+        "claude-3-opus-20240229",
+    ]
+
     # /home/oops/jan/models/mistral-ins-7b-q4/mistral-7b-instruct-v0.2.Q4_K_M.gguf
 
     # see https://platform.openai.com/docs/guides/text-generation
@@ -3295,9 +3415,15 @@ def crawler_call_api_within_json_structure_check(
             ################
             # for cloud api
             ################
+            # mistral
             elif use_this_model in mistal_model_list:
                 print(f"Mistral api selected...{use_this_model}")
                 dict_str = ask_mistral_model(context_history, use_this_model)
+
+            # anthropic
+            elif use_this_model in anthropic_model_list:
+                print(f"Anthropic api selected...{use_this_model}")
+                dict_str = simple_ask_anthropic_py(context_history, use_this_model)
 
             elif use_this_model in open_ai_model_list:
                 print(f"openAI api selected...{use_this_model}")
@@ -5775,6 +5901,15 @@ use_this_model = "mistral-large-latest"
 use_this_model = "mistral-tiny"
 
 
+#######################
+# Anthropic claude-2.1
+#######################
+use_this_model = "claude-3-opus-20240229"
+use_this_model = "claude-2.1"
+
+
+
+
 ###########################
 ###########################
 # Choices & Configurations
@@ -5887,7 +6022,7 @@ task_file_config_dic_list = [
         "input_state_context_mode": "one_string",
         "ranked_choice_output_structure_mode": "pipes",
         "this_offset": 10,
-        "this_range_inclusive": 11,
+        "this_range_inclusive": 1,
         "use_offset_and_range": True,
     },
     # # Cloud
@@ -5920,7 +6055,7 @@ task_file_config_dic_list = [
 # Whole Task Choices
 #####################
 ai_local_or_cloud_mode = "gguf"
-# ai_local_or_cloud_mode = "cloud"
+ai_local_or_cloud_mode = "cloud"
 number_of_preliminary_drafts = 2
 number_of_ranked_votes = 1
 retry_x_times = 2
@@ -5931,6 +6066,9 @@ retry_x_times = 2
 # list_of_models = ["mistral-tiny"]
 # list_of_models = ["tinyllama", "mistral-7b-instruct", "stablelm-zephyr-3b"]
 list_of_models = ["stable-zephyr-3b"]
+list_of_models = ["claude-2.1"]
+list_of_models = ["claude-3-opus-20240229"]
+
 
 
 
