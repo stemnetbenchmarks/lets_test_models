@@ -5928,9 +5928,9 @@ retry_x_times = 2
 ##############
 # Pick Models
 ##############
-list_of_models = ["mistral-tiny"]
+# list_of_models = ["mistral-tiny"]
 # list_of_models = ["tinyllama", "mistral-7b-instruct", "stablelm-zephyr-3b"]
-# list_of_models = ["stable-zephyr-3b"]
+list_of_models = ["stable-zephyr-3b"]
 
 
 
