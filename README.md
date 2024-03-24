@@ -117,9 +117,18 @@ python call_llamacapp.py
 ```python
 touch .env
 ```
+- pip install the cloud version: requirements_cloud.txt
 
 2. Add this text, where you can put your real keys.
 ```
 OPENAI_API_KEY = "xxx"
 mistral_api_key = "xxx"
 ```
+
+3. Turn on cloud mode in configurations
+```
+ai_local_or_cloud_mode = "gguf"
+```
+
+4. uncomment the library installs for cloud
+(turned off for ease of gguf use without an env)
