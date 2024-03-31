@@ -34,6 +34,7 @@ def make_html_report(target_csv_file_sources_dir, path_out):
                     <th>Name of Model</th>
                     <th>Task File</th>
                     <th>Task from Instructions</th>
+                    <th>Retries</th>
                     <th>Error Log</th>
                     <th>Duration of Single Task</th>
                     <th>Readable Timestamp</th>
@@ -54,28 +55,32 @@ def make_html_report(target_csv_file_sources_dir, path_out):
                                 <td>{name_of_model}</td>
                                 <td>{task_file}</td>
                                 <td>{task_from_instructions}</td>
+                                <td>{retry_counter}</td>
                                 <td>{error_log}</td>
                                 <td>{duration_of_single_task}</td>
                                 <td>{readable_timestamp}</td>
                             </tr>
                         """.format(
-                            score=html.escape(row["score"]),
-                            selected_option=html.escape(row["selected_option"]),
-                            correct_option=html.escape(row["correct_option"]),
-                            # # TODO turn this back on
+                            score=html.escape(
+                                row["score"]),
+                            selected_option=html.escape(
+                                row["selected_option"]),
+                            correct_option=html.escape(
+                                row["correct_option"]),
                             task_failure_comment=html.escape(
-                                row["task_failure_comment"]
-                            ),
-                            # task_failure_comment="",
-                            name_of_model=html.escape(row["name_of_model"]),
-                            task_file=html.escape(row["task_file"]),                            
+                                row["task_failure_comment"]),
+                            name_of_model=html.escape(
+                                row["name_of_model"]),
+                            task_file=html.escape(
+                                row["task_file"]),                            
                             task_from_instructions=html.escape(
-                                row["task_from_instructions"]
-                            ),
-                            error_log=html.escape(row["error_log"]),
+                                row["task_from_instructions"]),
+                            retry_counter=html.escape(
+                                row["retry_counter"]),
+                            error_log=html.escape(
+                                row["error_log"]),
                             duration_of_single_task=html.escape(
-                                row["duration_of_single_task"]
-                            ),
+                                row["duration_of_single_task"]),
                             readable_timestamp=html.escape(row["readable_timestamp"]),
                         )
             except Exception as e:
