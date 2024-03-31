@@ -21,11 +21,14 @@ def process_xml(xml_file, jsonl_file):
             pron = text_elements.find('pron').text.strip()
             txt2 = text_elements.find('txt2').text.strip()
 
-            question = f"{txt1} {pron} {txt2}"
+            # question = f"{txt1} {pron} {txt2}"
+            question = f"{txt1} {pron} {txt2} What does the pronoun '{pron}' refer to?"
+
 
             # answers = [answer.text.strip() for answer in schema.find('answers').findall('answer')]
-            answers = [f"{i+1}. {answer.text.strip()}" for i, answer in enumerate(schema.find('answers').findall('answer'))]
-
+            # answers = [f"{i+1}. {answer.text.strip()}" for i, answer in enumerate(schema.find('answers').findall('answer'))]
+            answers = [f"{answer.text.strip()}" for i, answer in enumerate(schema.find('answers').findall('answer'))]
+            
             correct_answer = schema.find('correctAnswer').text.strip()
             answer_index = get_answer_index(correct_answer)
 

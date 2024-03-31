@@ -1,0 +1,2 @@
+{"function_name": "calculate_area", "input_parameters": ["length", "width"], "output_description": "The area of a rectangle", "test_cases": [{"input": [5, 3], "expected_output": 15}, {"input": [2.5, 4], "expected_output": 10}]}
+{"function_name": "calculate_area", "input_parameters": ["length", "width"], "output_description": "The area of a rectangle", "test_cases": [{"input": [5, 3], "expected_output": 15}, {"input": [2.5, 4], "expected_output": 10}]}

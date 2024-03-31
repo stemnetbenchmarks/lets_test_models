@@ -4,24 +4,27 @@ import os
 """
 Uncomment for cloud mode
 """
-import requests
-import anthropic
-from dotenv import load_dotenv
-load_dotenv()
-openai_api_key = os.getenv("OPENAI_API_KEY")
-mistral_api_key = os.getenv("mistral_api_key")
-anthropic_api_key = os.getenv("anthropic_api_key")
+# import requests
+# import anthropic
+# from dotenv import load_dotenv
+# load_dotenv()
+# openai_api_key = os.getenv("OPENAI_API_KEY")
+# mistral_api_key = os.getenv("mistral_api_key")
+# anthropic_api_key = os.getenv("anthropic_api_key")
+
+
 """
 Offline and Vanilla OK!
 """
 import string
-
+import random
 import time
 import csv
 import sys
 from datetime import datetime, UTC
 import json  # Added missing import
 import re
+import subprocess
 
 from call_llamacpp import gguf_api, mini_gguf_api
 from html_all_reports_summary_from_csv import html_for_all_reports
@@ -100,12 +103,35 @@ def make_answers_directory_and_csv_path_header_string(
     # Create directories if they don't exist
     os.makedirs(os.path.dirname(task_set_results_path), exist_ok=True)
 
-    header_string = '"score","this_row_or_line_number","selected_option","correct_option","task_failure_comment","name_of_model","task_file","task_from_instructions","question_task_prompt","list_of_ranked_choice_options","draft_task_attempt_log","error_log","duration_of_single_task","readable_timestamp"\n'
+    # header_string = '"score","this_row_or_line_number","selected_option","correct_option","task_failure_comment","name_of_model","task_file","task_from_instructions","question_task_prompt","list_of_ranked_choice_options","draft_task_attempt_log","error_log","duration_of_single_task","readable_timestamp"\n'
+
+    # # Create an empty file (or just close it if it already exists)
+    # with open(task_set_results_path, "a", newline="") as csvfile:
+    #     csvfile.write(header_string)
+
+    header_string_list = [
+        "score",
+        "this_row_or_line_number",
+        "selected_option",
+        "correct_option",
+        "task_failure_comment",
+        "name_of_model",
+        "task_file",
+        "task_from_instructions",
+        "question_task_prompt",
+        "list_of_ranked_choice_options",
+        "draft_task_attempt_log",
+        "formatting_notes",
+        "error_log",
+        "duration_of_single_task",
+        "readable_timestamp",
+    ]
 
     # Create an empty file (or just close it if it already exists)
     with open(task_set_results_path, "a", newline="") as csvfile:
-        csvfile.write(header_string)
-
+        writer = csv.writer(csvfile)
+        writer.writerow(header_string_list)
+    
     return task_set_results_path
 
 
@@ -283,6 +309,119 @@ def create_empty_selectbest_frame(original_data, new_file_path):
 
 """# put translation into list_skeleton_json"""
 
+
+
+# helper function for coding layer
+def extract_code_from_markdown(markdown_text):
+    # Regular expression pattern to match code blocks
+    code_block_pattern = r'```(python)?\n([\s\S]*?)\n```'
+
+    # Find all code blocks in the Markdown text
+    code_blocks = re.findall(code_block_pattern, markdown_text, re.MULTILINE)
+
+    # Extract the code from the code blocks
+    extracted_code = ''
+    for block in code_blocks:
+        language, code = block
+        if language == 'python':
+            # If the code block is explicitly marked as Python, use it as is
+            extracted_code += code + '\n'
+        else:
+            # If the code block is not explicitly marked, assume it's Python code
+            extracted_code += code + '\n'
+
+    return extracted_code.strip()
+
+
+# helper function for coding layer
+def pass_fail_unit_test_function__stdout_stderr(code_markdown, test_cases, function_name, error_log):
+    """
+    ```python
+    def calculate_area(x,y):\n
+        return x*y
+    ```
+    # Function to extract code from markdown, assuming it's already defined
+    # Function to create_challenge_json, assuming it's already defined
+
+    # Assuming challenge_data and other necessary variables are already defined
+
+    # Example usage: Get the code from the test-taker (in Markdown format)
+    code_markdown = input
+
+    # Load the challenge JSON file to get function name and test cases
+    with open("challenge.json", "r") as file:
+    challenge_data = json.load(file)
+
+    function_name = challenge_data["function_name"]
+    test_cases = challenge_data["test_cases"]
+
+    # Run the test
+    run_test(code_markdown, test_cases, function_name)
+    """
+    
+    # Extract the code from the Markdown
+    code = extract_code_from_markdown(code_markdown)
+
+    pass_flag_set = set()
+    
+    print(code)
+
+    for test_case in test_cases:
+        input_values = test_case["input"]
+        expected_output = test_case["expected_output"]
+        
+        # Construct the full script with the test case applied
+        # This script defines the function from the markdown, then calls it with the current test case's inputs
+        full_script = f"{code}\n\nprint({function_name}(*{input_values}))"
+
+        # Run the full script using subprocess
+        process = subprocess.run(
+            [sys.executable, "-c", full_script],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            universal_newlines=True,
+        )
+
+        stdout = process.stdout.strip()
+
+        # Compare the actual output with the expected output
+        try:
+            # Try to evaluate the actual output and expected output as numbers
+            actual_output = float(stdout)
+            expected_output = float(expected_output)
+
+            if abs(actual_output - expected_output) < 1e-9:
+                print(f"Test Case Passed: Input = {input_values}, Expected Output = {expected_output}")
+                pass_flag_set.add('pass')
+            else:
+                print(f"Test Case Failed: Input = {input_values}, Expected Output = {expected_output}, Actual Output = {actual_output}")
+                error_log.append(stdout)
+                pass_flag_set.add('fail')
+
+        except ValueError:
+            # If the conversion to numbers fails, compare the string representations
+            if stdout == str(expected_output):
+                print(f"Test Case Passed: Input = {input_values}, Expected Output = {expected_output}")
+                pass_flag_set.add('pass')
+            else:
+                print(f"Test Case Failed: Input = {input_values}, Expected Output = {expected_output}, Actual Output = {stdout}")
+                error_log.append(stdout)
+                pass_flag_set.add('fail')
+
+        # # Assuming the function output is directly printed, compare stdout to expected output
+        # if stdout == str(expected_output):
+        #     print(f"Test Case Passed: Input = {input_values}, Expected Output = {expected_output}")
+        #     pass_flag_set.add('pass')
+        # else:
+        #     print(f"Test Case Failed: Input = {input_values}, Expected Output = {expected_output}, Actual Output = {stdout}")
+        #     error_log.append(stdout)
+        #     pass_flag_set.add('fail')
+
+    if pass_flag_set == {'pass'}:
+        return 'pass'
+    else:
+        return False
+        
 
 # Helper Function
 def populate_skeleton_json_with_data(skeleton_json, source_data):
@@ -1923,6 +2062,41 @@ def duration_min_sec(start_time, end_time):
     return time_message
 
 
+
+def check_answer_in_dict(answer_number, data_dict):
+    print(
+        f"""def check_answer_in_dict(answer_number, data_dict):
+
+        Scoring:
+        answer_number       -> {answer_number}
+        type(answer_number) -> {type(answer_number)}
+
+        data_dict        -> {data_dict}
+        type(data_dict)  -> {type(data_dict)}
+
+        """
+    )
+    try:
+
+        # make sure int type
+        answer_number = int(answer_number)
+        data_dict = {int(key): value for key, value in data_dict.items()}
+
+
+        # check for string or int form in dict of errors
+        if answer_number in data_dict:
+            error_reason = data_dict[answer_number]
+            return error_reason
+
+        else:
+            return None
+
+    except Exception as e:
+        print(f"check_answer_in_dict() issue: {str(e)}")
+        return None
+
+
+
 # Helper Function
 def set_translator__system_prompt(context_history, target_language):
 
@@ -2217,7 +2391,8 @@ def check_structure_of_response(dict_str):
 def task_check_structure_of_response(
     structured_output_format,
     dict_str,
-    task_mode_answer_option_choices_provided,
+    task_mode_answer_option_choices_provided_boolean,
+    these_original_task_options,
     error_log,
 ):
     """
@@ -2256,10 +2431,25 @@ def task_check_structure_of_response(
 
             matches_list = remove_specific_strings(matches_list, strings_to_remove)
 
-            if task_mode_answer_option_choices_provided:
+            if task_mode_answer_option_choices_provided_boolean:
+                print(f"matches_list before filer ->  {matches_list}")
+
                 matches_list = remove_non_integers_from_list(matches_list)
 
+                print(f"remove_non_integers_from_list(matches_list) matches_list ->  {matches_list}")
+
+                """
+                Use a list of strings of option-number-integers:
+                """          
+                # remove any 'option' this is not a real option
+                option_number_list = []
+                for this_int in range (1, len(these_original_task_options) + 1):
+                    option_number_list.append(str(this_int))
+                print(f"option_number_list ->  {option_number_list}")
+                matches_list = [item for item in matches_list if item in option_number_list]
+
             if matches_list:
+                print(f"matches_list after option-number-string-only cleaned ->  {matches_list}")
                 response_to_task = matches_list[-1]
             else:
                 response_to_task = ""
@@ -2910,15 +3100,26 @@ def general_task_call_api_within_structure_check(
     use_this_model,
     parameter_dict,
     ai_local_or_cloud_mode,
-    task_mode_answer_option_choices_provided,
+    task_mode_answer_option_choices_provided_boolean,
     task_mode_output_structure_mode,
     draft_task_attempt_log,
     retry_x_times,
+    these_original_task_options,
+    this_task_config_dict,
     error_log,
+    test_cases=None,
+    function_name=None
 ):
     """
     task_mode_output_structure_mode is passed to the output structure checker
     """
+
+    if "function_writing" in this_task_config_dict:
+        function_writing = this_task_config_dict[
+            "function_writing"
+        ]
+    else: 
+        function_writing = False  
 
     # default
     dict_str = ""
@@ -3024,7 +3225,7 @@ def general_task_call_api_within_structure_check(
                 raise f"No known model option chosen...use_this_model -> {use_this_model}"
 
         except Exception as e:
-            jsonchecked_translation = None
+            task_response_string = None
             print(f"\n\nMaybe incorrect model choice, use_this_model -> {use_this_model}: general_task_call_api_within_structure_check Failed: {str(e)}")
 
         if not dict_str:
@@ -3033,14 +3234,30 @@ def general_task_call_api_within_structure_check(
             )
             return False
 
-        jsonchecked_translation = task_check_structure_of_response(
-            task_mode_output_structure_mode,
-            dict_str,
-            task_mode_answer_option_choices_provided,
-            error_log,
-        )
-
-        if jsonchecked_translation:
+        
+        if function_writing:
+            
+            
+            
+            task_response_string = pass_fail_unit_test_function__stdout_stderr(
+                code_markdown=dict_str, 
+                test_cases=test_cases, 
+                function_name=function_name, 
+                error_log=error_log)
+            
+            if task_response_string == 'pass':
+                return task_response_string
+        
+        else:
+            task_response_string = task_check_structure_of_response(
+                task_mode_output_structure_mode,
+                dict_str,
+                task_mode_answer_option_choices_provided_boolean,
+                these_original_task_options,
+                error_log,
+            )
+    
+        if task_response_string:
             json_ok_flag = True
 
         else:
@@ -3056,7 +3273,7 @@ def general_task_call_api_within_structure_check(
         f"general_task_call_api_within_structure_check finalretry_counter -> {retry_counter}"
     )
 
-    return jsonchecked_translation
+    return task_response_string
 
 
 """ call_api_within_number_check"""
@@ -3685,6 +3902,42 @@ def extract_string_value_by_path(json_object, this_path):
         json_object_copy = json_object_copy[step]
 
     return json_object_copy
+
+
+
+
+
+def randomize_list(original_list):
+    """
+    index from one, produces
+    randomized_list, 
+    original_to_randomized, 
+    randomized_to_original
+
+    # Example usage
+    original_list = [1, 2, 3, 4, 5]
+    randomized_list, original_to_randomized, randomized_to_original = randomize_list(original_list)
+
+    print("Original List:", original_list)
+    print("Randomized List:", randomized_list)
+    print("Original to Randomized Lookup Table:", original_to_randomized)
+    print("Randomized to Original Lookup Table:", randomized_to_original)
+    """
+    # Create a copy of the original list
+    randomized_list = original_list[:]
+    
+    # Shuffle the list in-place
+    random.shuffle(randomized_list)
+    
+    # Create lookup tables
+    original_to_randomized = {}
+    randomized_to_original = {}
+    
+    for i, item in enumerate(original_list, start=1):
+        original_to_randomized[i] = randomized_list.index(item) + 1
+        randomized_to_original[randomized_list.index(item) + 1] = i
+    
+    return randomized_list, original_to_randomized, randomized_to_original
 
 
 def lower_clean_string(input_string):
@@ -4503,7 +4756,7 @@ def do_task_please(
     print_find_all_models(models_dir_path)
 
     # task mode items:
-    task_mode_answer_option_choices_provided = task_mode_configies[
+    task_mode_answer_option_choices_provided_boolean = task_mode_configies[
         "answer_option_choices_provided"
     ]
     task_mode_validate_the_answer = task_mode_configies["validate_the_answer"]
@@ -4580,7 +4833,25 @@ def do_task_please(
         # index_of_options = this_task_config_dict["index_of_options"]
         options_field_name = this_task_config_dict["options_field_name"]
         scoring_field_name = this_task_config_dict["scoring_field_name"]
+        
+        if "function_name__field_name" in this_task_config_dict:
+            function_name__field_name = this_task_config_dict[
+                "function_name__field_name"
+            ]
+            print(f"function_name__field_name -> {function_name__field_name}")
+        else: 
+            function_name__field_name = None    
 
+        
+        if "function_test_cases__field_name" in this_task_config_dict:
+            function_test_cases__field_name = this_task_config_dict[
+                "function_test_cases__field_name"
+            ]
+            print(f"function_test_cases__field_name -> {function_test_cases__field_name}")
+        else: 
+            function_test_cases__field_name = None        
+        
+        
         if "error_comment_data_lookup_table_field_name" in this_task_config_dict:
             error_comment_data_lookup_table_field_name = this_task_config_dict[
                 "error_comment_data_lookup_table_field_name"
@@ -4588,6 +4859,22 @@ def do_task_please(
         else: 
             error_comment_data_lookup_table_field_name = None
 
+        if "randomize_option_choices" in this_task_config_dict:
+            randomize_option_choices = this_task_config_dict[
+                "randomize_option_choices"
+            ]
+        else: 
+            randomize_option_choices = False
+
+        if "function_writing" in this_task_config_dict:
+            function_writing = this_task_config_dict[
+                "function_writing"
+            ]
+        else: 
+            function_writing = False
+        
+        
+        
         this_offset = this_task_config_dict["this_offset"]
         this_range_inclusive = this_task_config_dict["this_range_inclusive"]
         use_offset_and_range = this_task_config_dict["use_offset_and_range"]
@@ -4612,7 +4899,7 @@ def do_task_please(
             ]
 
         if "answer_option_choices_provided" in this_task_config_dict:
-            task_mode_answer_option_choices_provided = this_task_config_dict[
+            task_mode_answer_option_choices_provided_boolean = this_task_config_dict[
                 "answer_option_choices_provided"
             ]
 
@@ -4694,7 +4981,9 @@ def do_task_please(
             else:
                 print("NO this_offset and this_range_inclusive found")
                 start = 0
-                stop = this_original_task_file_length
+                
+                # set -1 because len is from 1, but index is from 0
+                stop = this_original_task_file_length - 1
 
             ############################
             ############################
@@ -4769,6 +5058,8 @@ def do_task_please(
                         options_field_name,
                         scoring_field_name,
                         error_comment_data_lookup_table_field_name,
+                        function_test_cases__field_name,
+                        function_name__field_name,
                     ]
 
                     # Step 1: Extract the JSON object from the specified line
@@ -4784,7 +5075,9 @@ def do_task_please(
                         )
                         print("\nspecific_fields[] -> Extracted Fields:", specific_fields)
                     else:
-                        print("\nNo JSON object found at the specified line.")
+                        print("\nExit here, stop waiting for Godot. No JSON object found at the specified line.")
+                        task_ok_flag = True
+                        break
 
                     #################
                     # Task et Option
@@ -4808,9 +5101,19 @@ def do_task_please(
                     else:
                         these_original_task_options = None
 
-                    correct_option = specific_fields[scoring_field_name]
-                    print(f"correct_option -> {correct_option}")
+                    # correct option and scoring
 
+                    if scoring_field_name in specific_fields:
+                        correct_option = specific_fields[scoring_field_name]
+                        print(f"correct_option -> {correct_option}")
+                    elif function_writing:
+                        correct_option = 'pass'
+                    else:
+                        correct_option = None
+                    
+
+
+                    
                     if these_original_task_options:
                         task_summary = f"Task: {this_task}, Options: {pretty_print_list(these_original_task_options)}"
                     else:
@@ -4821,6 +5124,61 @@ def do_task_please(
                         f"these_original_task_options -> {these_original_task_options}"
                     )
                     print(f"task_summary -> {task_summary}")
+                    
+                    
+                    # code
+                    if function_test_cases__field_name in specific_fields:
+                        test_cases = specific_fields[
+                            function_test_cases__field_name
+                        ]
+                        print(f"test_cases -> {test_cases}{type(test_cases)}")
+                    else:
+                        test_cases = None        
+                    
+                    if function_name__field_name:
+                        function_name = specific_fields[
+                            function_name__field_name
+                        ]
+                        print(f"function_name -> {function_name}{type(function_name)}")                        
+                    else:
+                        function_name = None
+                    
+                    ##############################
+                    ##############################
+                    # option choice randomization
+                    ##############################
+                    ##############################
+
+                    # setting default values
+                    displayed_option_choices = []
+                    randomized_option_list = []
+                    original_to_randomized_lookup = {}
+                    randomized_to_original_lookup = {}
+                    
+                    
+
+                    
+                    # if there are options and you want to randomize them
+                    if (randomize_option_choices is True) and these_original_task_options:
+                        print("\nRandomizing Task Option Choices")
+                                                
+                        randomized_option_list, original_to_randomized_lookup, randomized_to_original_lookup = randomize_list(these_original_task_options)
+                    
+                        displayed_option_choices = randomized_option_list
+
+                        print(f"""
+                            
+                            these_original_task_options   -> {these_original_task_options}
+                            randomized_option_list        -> {randomized_option_list}
+                            
+                            original_to_randomized_lookup -> {original_to_randomized_lookup}
+                            randomized_to_original_lookup -> {randomized_to_original_lookup}
+                            
+                            """)
+                                                            
+                    else:
+                        displayed_option_choices = these_original_task_options
+
 
                     # make empty conversation
                     # reset context history for new 'conversation' about translation
@@ -4893,7 +5251,7 @@ def do_task_please(
                     print(
                         f"""
                     task mode items:
-                    task_mode_answer_option_choices_provided -> {task_mode_answer_option_choices_provided}
+                    task_mode_answer_option_choices_provided_boolean -> {task_mode_answer_option_choices_provided_boolean}
                     task_mode_validate_the_answer -> {task_mode_validate_the_answer}
                     task_mode_use_history_context_dict_list -> {task_mode_use_history_context_dict_list}
                     task_mode_system_instructions -> {task_mode_system_instructions}
@@ -4910,7 +5268,7 @@ def do_task_please(
                     ######################
                     ######################
                     # if the question is not multiple-choice
-                    if not task_mode_answer_option_choices_provided:
+                    if not task_mode_answer_option_choices_provided_boolean:
                         """
                         2^3 == 8
 
@@ -4926,50 +5284,80 @@ def do_task_please(
                             pipes_open_solution_body_nocontext
                         """
 
-                        #############
-                        # if context
-                        #############
-                        if task_mode_use_history_context_dict_list:
-                            # TODO: make context dict list maker
-
-                            ############
-                            # Pipes |||
-                            ############
-                            if task_mode_output_structure_mode == "pipes":
+                        if not function_writing:
                                 ############
-                                # Open Task: use context dict list
+                                # Pipes |||
                                 ############
-                                context_history = f"""
+                                if task_mode_output_structure_mode == "markdowwn":
+                                    ############
+                                    # Open Task: use context dict list
+                                    ############
+                                    context_history = f"""
 
-                                What is the best response for this task? 
-                                {this_task}
+                                    {this_task}
 
-                                Give your answer in this format:
-                                {pipes_open_solution_body_nocontext}
+                                    Put your python code in markdown ```python #code here ```, 
+                                    Without hard-coding any answers into the function.
+                                    
+                                    
+                                    Any other comments or plans write outside of the python markdown and write before you write the function. Only the function
+                                    in the markdown last.
+                                    
+                                    """
+                                    
+                                else:
+                                    print(
+                                        f""" exit: prompt selection 1: option problem task_mode_output_structure_mode {task_mode_output_structure_mode}"""
+                                    )
+                                    sys.exit()
+                            
+                        else:     
+                            #############
+                            # if context
+                            #############
+                            if task_mode_use_history_context_dict_list:
+                                # TODO: make context dict list maker
 
-                                """
-
-                            ##############
-                            # {dict: ...}
-                            ##############
-                            elif task_mode_output_structure_mode == "dict":
                                 ############
-                                # Open Task: use context dict list
+                                # Pipes |||
                                 ############
-                                context_history = f"""
+                                if task_mode_output_structure_mode == "pipes":
+                                    ############
+                                    # Open Task: use context dict list
+                                    ############
+                                    context_history = f"""
 
-                                What is the best response for this task? 
-                                {this_task}
+                                    What is the best response for this task? 
+                                    {this_task}
 
-                                Give your answer in this format:
-                                {dict_open_solution_body_nocontext}
+                                    Give your answer in this format:
+                                    {pipes_open_solution_body_nocontext}
 
-                                """
-                            else:
-                                print(
-                                    f""" exit: prompt selection 1: option problem task_mode_output_structure_mode {task_mode_output_structure_mode}"""
-                                )
-                                sys.exit()
+                                    """
+
+                                ##############
+                                # {dict: ...}
+                                ##############
+                                elif task_mode_output_structure_mode == "dict":
+                                    ############
+                                    # Open Task: use context dict list
+                                    ############
+                                    context_history = f"""
+
+                                    What is the best response for this task? 
+                                    {this_task}
+
+                                    Give your answer in this format:
+                                    {dict_open_solution_body_nocontext}
+
+                                    """
+                                else:
+                                    print(
+                                        f""" exit: prompt selection 1: option problem task_mode_output_structure_mode {task_mode_output_structure_mode}"""
+                                    )
+                                    sys.exit()
+
+                                
 
                         ################
                         # if NO context
@@ -5021,7 +5409,7 @@ def do_task_please(
                     ##################
                     ##################
                     # elif "multiple_choice":
-                    if task_mode_answer_option_choices_provided is True:
+                    if task_mode_answer_option_choices_provided_boolean is True:
                         """
                         dict_multiple_choice_solution_body_context
                         pipes_multiple_choice_solution_body_context
@@ -5053,7 +5441,7 @@ def do_task_please(
                                 {this_task} 
 
                                 From this list of options: 
-                                {pretty_print_list(these_original_task_options)} 
+                                {pretty_print_list(displayed_option_choices)} 
 
                                 Your answer must be the number of the option in the order given. "1" is the first option. 
 
@@ -5077,7 +5465,7 @@ def do_task_please(
                                 {this_task} 
 
                                 From this list of options: 
-                                {pretty_print_list(these_original_task_options)} 
+                                {pretty_print_list(displayed_option_choices)} 
 
                                 Your answer must be the number of the option in the order given. "1" is the first option. 
 
@@ -5110,7 +5498,7 @@ def do_task_please(
                                 {this_task} 
 
                                 From this list of options: 
-                                {pretty_print_list(these_original_task_options)} 
+                                {pretty_print_list(displayed_option_choices)} 
 
                                 Your answer must be the number of the option in the order given. "1" is the first option. 
 
@@ -5134,7 +5522,7 @@ def do_task_please(
                                 {this_task} 
 
                                 From this list of options: 
-                                {pretty_print_list(these_original_task_options)} 
+                                {pretty_print_list(displayed_option_choices)} 
 
                                 Your answer must be the number of the option in the order given. "1" is the first option. 
 
@@ -5192,12 +5580,15 @@ def do_task_please(
                                 use_this_model,
                                 parameter_dict,
                                 ai_local_or_cloud_mode,
-                                task_mode_answer_option_choices_provided,
+                                task_mode_answer_option_choices_provided_boolean,
                                 task_mode_output_structure_mode,
                                 draft_task_attempt_log,
                                 retry_x_times,
+                                these_original_task_options,
+                                this_task_config_dict,
                                 error_log,
-                            )
+                                test_cases,
+                                function_name)
                         )
 
                         # # remove overt duplicates
@@ -5212,7 +5603,7 @@ def do_task_please(
                         )
 
                         # if NOT using a list of numbered options, string ok!
-                        if task_mode_answer_option_choices_provided:
+                        if task_mode_answer_option_choices_provided_boolean:
                             task_response_string = str_to_int_or_none(
                                 task_response_string
                             )
@@ -5221,7 +5612,7 @@ def do_task_please(
 
                         if task_response_string:
 
-                            if task_mode_answer_option_choices_provided:
+                            if task_mode_answer_option_choices_provided_boolean:
                                 list_of_ranked_choice_options.append(
                                     int(task_response_string)
                                 )
@@ -5236,6 +5627,10 @@ def do_task_please(
                         print(
                             f"list_of_ranked_choice_options -> {list_of_ranked_choice_options}"
                         )
+                        
+                        if function_writing and (task_response_string == 'pass'):
+                            print("Pass: Made function, ok to move on.")
+                            break
 
                     #####################################################
                     ########################################################
@@ -5568,52 +5963,33 @@ def do_task_please(
                     # Scoring
                     ##########
                     ##########
+                    """
+                    Scoring depends whether the option list has been randomized.
+                    If the list has been randomized, adjust the AI's choice
+                    to be as if it had not been.
+                    """
 
-                    def check_answer_in_raw_task(answer_number, data):
-                        print(
-                            f"""def check_answer(answer_number, data):
+                    # if there are options and you want to randomize them
+                    if (randomize_option_choices is True) and these_original_task_options:
+                        print(f""" Inspection
 
-                            Scoring:
-                            answer_number       -> {answer_number}
-                            type(answer_number) -> {type(answer_number)}
+                        these_original_task_options   -> {these_original_task_options}
+                        randomized_option_list        -> {randomized_option_list}
 
-                            data        -> {data}
-                            type(data)  -> {type(data)}
+                        original_to_randomized_lookup -> {original_to_randomized_lookup}
+                        randomized_to_original_lookup -> {randomized_to_original_lookup}
 
-                            """
-                        )
+                        Original selected_option      -> {selected_option}
+                        """)
+                                                                        
+                                                                                                                                                
+                        if selected_option is not None:
+                            selected_option = randomized_to_original_lookup[selected_option]
+                    
+                            print(f""" 
+                            selected_option               -> {selected_option}
+                            """) 
 
-                    def check_answer_in_dict(answer_number, data_dict):
-                        print(
-                            f"""def check_answer_in_dict(answer_number, data_dict):
-
-                            Scoring:
-                            answer_number       -> {answer_number}
-                            type(answer_number) -> {type(answer_number)}
-
-                            data_dict        -> {data_dict}
-                            type(data_dict)  -> {type(data_dict)}
-
-                            """
-                        )
-                        try:
-
-                            # make sure int type
-                            answer_number = int(answer_number)
-                            data_dict = {int(key): value for key, value in data_dict.items()}
-
-
-                            # check for string or int form in dict of errors
-                            if answer_number in data_dict:
-                                error_reason = data_dict[answer_number]
-                                return error_reason
-
-                            else:
-                                return None
-
-                        except Exception as e:
-                            print(f"check_answer_in_dict() issue: {str(e)}")
-                            return None
 
 
                     if error_comment_data_lookup_table:
@@ -5644,9 +6020,14 @@ def do_task_please(
                     selected_option = str(selected_option)
                     correct_option = str(correct_option)
 
+                    
+                    # for write function
+                    if function_writing and (selected_option == 'pass'):
+                        score = 1
+
                     # if multiple choice and should check answer:
-                    if (
-                        task_mode_validate_the_answer and task_mode_answer_option_choices_provided
+                    elif (
+                        task_mode_validate_the_answer and task_mode_answer_option_choices_provided_boolean
                     ):
                         print(
                             f"selected_option -> {selected_option} type -> {type(selected_option)}"
@@ -5665,15 +6046,30 @@ def do_task_please(
                         # making csv row
                         print("with score: making csv row...")
 
+                    """
+                    Formatting Notes Section
+                    Add question order randomization to formatting notes.
+                    """
+                    formatting_notes = ""
+                    
+                    if randomize_option_choices is True:
+                        formatting_notes += str(randomize_option_choices)
+                    
+                    
+                    formatting_notes = replace_special_characters_with_text(
+                        formatting_notes
+                    )
+
+                    
                     # if open-answer and should check answer:
                     """
                     If open answer contains
-                    - without capitcaliaation
+                    - without capitalization
                     - without puncutation
                     - without spaces 
                     """
                     if task_mode_validate_the_answer and (
-                        not task_mode_answer_option_choices_provided
+                        not task_mode_answer_option_choices_provided_boolean
                     ):
                         print("checking substring")
                         print(
@@ -5740,6 +6136,7 @@ def do_task_please(
                         safe_question_task_prompt,
                         list_of_ranked_choice_options,
                         safe_task_attempt_log,
+                        formatting_notes,
                         error_log_safe_string,
                         duration_of_single_task,
                         readable_timestamp,
@@ -5848,6 +6245,7 @@ def do_task_please(
                         safe_question_task_prompt,
                         list_of_ranked_choice_options,
                         safe_task_attempt_log,
+                        formatting_notes,
                         error_log_safe_string,
                         duration_of_single_task,
                         readable_timestamp,
@@ -5992,39 +6390,41 @@ task_file_config_dic_list = [
     #     "scoring_field_name": "answer_from_index_start_at_1",
     #     "error_comment_data_lookup_table_field_name": "error_comment_data_lookup_table",
     #     "answer_option_choices_provided": True,
+    #     "randomize_option_choices": True, 
     #     "validate_the_answer": True,
     #     "use_history_context_dict_list": False,
     #     "system_instructions": False,
     #     "output_structure_mode": "pipes",
     #     "input_state_context_mode": "one_string",
     #     "ranked_choice_output_structure_mode": "pipes",
-    #     "this_offset": 0,
+    #     "this_offset": 3,
     #     "this_range_inclusive": 1,
     #     "use_offset_and_range": True,
     # },
-    {
-        "file_name": "winograd_schemas_test_file.jsonl",
-        "file_type": ".jsonl",
-        "header_exits": False,
-        "file_structure": "",
-        "index_of_task": None,
-        "index_of_options": None,
-        # Fields
-        "task_field_name": "task",
-        "options_field_name": "options",
-        "scoring_field_name": "answer_from_index_start_at_1",
-        "error_comment_data_lookup_table_field_name": None,
-        "answer_option_choices_provided": True,
-        "validate_the_answer": True,
-        "use_history_context_dict_list": False,
-        "system_instructions": False,
-        "output_structure_mode": "pipes",
-        "input_state_context_mode": "one_string",
-        "ranked_choice_output_structure_mode": "pipes",
-        "this_offset": 10,
-        "this_range_inclusive": 1,
-        "use_offset_and_range": True,
-    },
+    # {
+    #     "file_name": "winograd_schemas_test_file.jsonl",
+    #     "file_type": ".jsonl",
+    #     "header_exits": False,
+    #     "file_structure": "",
+    #     "index_of_task": None,
+    #     "index_of_options": None,
+    #     # Fields
+    #     "task_field_name": "task",
+    #     "options_field_name": "options",
+    #     "scoring_field_name": "answer_from_index_start_at_1",
+    #     "error_comment_data_lookup_table_field_name": None,
+    #     "answer_option_choices_provided": True,
+    #     "randomize_option_choices": True, 
+    #     "validate_the_answer": True,
+    #     "use_history_context_dict_list": False,
+    #     "system_instructions": False,
+    #     "output_structure_mode": "pipes",
+    #     "input_state_context_mode": "one_string",
+    #     "ranked_choice_output_structure_mode": "pipes",
+    #     "this_offset": 10,
+    #     "this_range_inclusive": 2,
+    #     "use_offset_and_range": True,
+    # },
     # # Cloud
     # {
     #     "file_name": "error_explained_test_1.jsonl",
@@ -6049,13 +6449,43 @@ task_file_config_dic_list = [
     #     "this_range_inclusive": 2,
     #     "use_offset_and_range": True,
     # },
+    {
+        "file_name": "write_a_make_a_function_challenge2.jsonl",
+        "file_type": ".jsonl",
+        "header_exits": False,
+        "file_structure": "",
+        "index_of_task": None,
+        "index_of_options": None,
+        # Fields
+        "task_field_name": "task",
+        "options_field_name": "options",
+        "scoring_field_name": "answer_from_index_start_at_1",
+        "error_comment_data_lookup_table_field_name": None,
+        "answer_option_choices_provided": False,
+        "randomize_option_choices": False, 
+        "validate_the_answer": True,
+        "use_history_context_dict_list": False,
+        "system_instructions": False,
+        
+        "function_writing": True,
+        "function_test_cases__field_name": "test_cases",
+        "function_name__field_name": "function_name",     
+
+        "output_structure_mode": "pipes",
+        "input_state_context_mode": "one_string",
+        "ranked_choice_output_structure_mode": "pipes",
+        "this_offset": 0,
+        "this_range_inclusive": 1,
+        "use_offset_and_range": False,
+    },
+
 ]
 
 #####################
 # Whole Task Choices
 #####################
 ai_local_or_cloud_mode = "gguf"
-ai_local_or_cloud_mode = "cloud"
+# ai_local_or_cloud_mode = "cloud"
 number_of_preliminary_drafts = 2
 number_of_ranked_votes = 1
 retry_x_times = 2
@@ -6065,10 +6495,11 @@ retry_x_times = 2
 ##############
 # list_of_models = ["mistral-tiny"]
 # list_of_models = ["tinyllama", "mistral-7b-instruct", "stablelm-zephyr-3b"]
-list_of_models = ["stable-zephyr-3b"]
-list_of_models = ["claude-2.1"]
-list_of_models = ["claude-3-opus-20240229"]
-
+# list_of_models = ["stable-zephyr-3b"]
+# list_of_models = ["claude-2.1"]
+# list_of_models = ["claude-3-opus-20240229"]
+# list_of_models = ["mistral-7b-instruct", "gemma-2b-it", "stablelm-zephyr-3b"]
+list_of_models = ["mistral-7b-instruct"]
 
 
 

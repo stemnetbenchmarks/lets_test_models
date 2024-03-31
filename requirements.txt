@@ -1,3 +1,4 @@
 flake8
 pylint
 git+https://github.com/psf/black
+anthropic
