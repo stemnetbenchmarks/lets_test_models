@@ -312,32 +312,53 @@ def create_empty_selectbest_frame(original_data, new_file_path):
 
 
 
-# helper function for coding layer
 def extract_code_from_markdown(markdown_text):
-    # Regular expression pattern to match code blocks
-    code_block_pattern = r'```(python)?\n([\s\S]*?)\n```'
+    """
+    requires re
+    Extract the longest code block from the given Markdown text.
 
-    # Find all code blocks in the Markdown text
+    Args:
+        markdown_text (str): The Markdown text containing code blocks.
+
+    Returns:
+        str: The longest code block found in the text, or an empty string if no code block is found.
+
+    variation cases:
+    
+    variations include
+    ```
+    ```
+    
+    ```markdown
+    ```
+    
+    ```python
+    ```
+    
+    ```code
+    ```
+
+
+    """
+    # Regular expression pattern to match code blocks
+    code_block_pattern = r'```(python|markdown|code)?\n([\s\S]*?)\n```'
+    # Find all code blocks in the text
     code_blocks = re.findall(code_block_pattern, markdown_text, re.MULTILINE)
 
-    # Extract the code from the code blocks
-    extracted_code = ''
-    for block in code_blocks:
-        language, code = block
-        if language == 'python':
-            # If the code block is explicitly marked as Python, use it as is
-            extracted_code += code + '\n'
-        else:
-            # If the code block is not explicitly marked, assume it's Python code
-            extracted_code += code + '\n'
+    # Find the longest code block
+    longest_code_block = max(code_blocks, key=lambda x: len(x[1]), default=('', ''))
 
-    return extracted_code.strip()
+    return longest_code_block[1]
 
 
+import ast 
 # helper function for coding layer
 def pass_fail_unit_test_function__stdout_stderr(code_markdown, test_cases, function_name, retry_or_error_event_counter_list, error_log):
     """
-    ```python
+    standard issues:
+    - input() is not allowed
+    - 
+    ```
     def calculate_area(x,y):\n
         return x*y
     ```
@@ -383,9 +404,20 @@ def pass_fail_unit_test_function__stdout_stderr(code_markdown, test_cases, funct
         input_values = test_case["input"]
         expected_output = test_case["expected_output"]
         
-        # Construct the full script with the test case applied
-        # This script defines the function from the markdown, then calls it with the current test case's inputs
-        full_script = f"{extracted_code}\n\nprint({function_name}(*{input_values}))"
+        """
+        Construct the full script with the test case applied
+        This script defines the function from the markdown, 
+        then calls it with the current test case's inputs
+        """
+        extracted_code = extracted_code.replace("print(", "# print(")
+        # extracted_code = extracted_code.replace("\nprint(", "# print(")
+        extracted_code = extracted_code.replace("input()", "'error_no_input_allowed'")
+            
+        
+        # full_script = f"{extracted_code}\n\nprint({function_name}(*{input_values}))"
+        # full_script = f"{extracted_code}\n\nif __name__ == '__main__':\n    print({function_name}(*{input_values}))"
+        # to avoid tab-intent issues
+        full_script = f"{extracted_code}\n\nif __name__ == '__main__': print({function_name}(*{input_values}))"
 
         # Run the full script using subprocess
         process = subprocess.run(
@@ -398,13 +430,40 @@ def pass_fail_unit_test_function__stdout_stderr(code_markdown, test_cases, funct
         stdout = process.stdout.strip()
         stderr_plus = 'Feedback: This code ' + extracted_code + ' lead to this error: ' + process.stderr.strip() + ', stdout: ' + stdout + "Try again: "
 
+        # # Compare the actual output with the expected output
+        # try:
+        #     # Try to evaluate the actual output and expected output as numbers
+        #     actual_output = float(stdout)
+        #     expected_output = float(expected_output)
+
+        #     if abs(actual_output - expected_output) < 1e-9:
+        #         print(f"Test Case Passed: Input = {input_values}, Expected Output = {expected_output}")
+        #         pass_flag_set.add('pass')
+        #     else:
+        #         print(f"Test Case Failed: Input = {input_values}, Expected Output = {expected_output}, Actual Output = {actual_output}")
+        #         error_log.append(stdout)
+        #         retry_or_error_event_counter_list.append(True)
+        #         pass_flag_set.add('fail')
+
+        # except ValueError:
+        #     # If the conversion to numbers fails, compare the string representations
+        #     if stdout == str(expected_output):
+        #         print(f"Test Case Passed: Input = {input_values}, Expected Output = {expected_output}")
+        #         pass_flag_set.add('pass')
+        #     else:
+        #         print(f"Test Case Failed: Input = {input_values}, Expected Output = {expected_output}, Actual Output = {stdout}")
+        #         error_log.append(stdout)
+        #         retry_or_error_event_counter_list.append(True)
+        #         pass_flag_set.add('fail')
+
+        # Import the ast module to safely evaluate string representations of lists
+
         # Compare the actual output with the expected output
         try:
-            # Try to evaluate the actual output and expected output as numbers
-            actual_output = float(stdout)
-            expected_output = float(expected_output)
-
-            if abs(actual_output - expected_output) < 1e-9:
+            # Try to evaluate the actual output and expected output as lists
+            actual_output = ast.literal_eval(stdout)
+            expected_output = ast.literal_eval(expected_output)
+            if actual_output == expected_output:
                 print(f"Test Case Passed: Input = {input_values}, Expected Output = {expected_output}")
                 pass_flag_set.add('pass')
             else:
@@ -412,9 +471,8 @@ def pass_fail_unit_test_function__stdout_stderr(code_markdown, test_cases, funct
                 error_log.append(stdout)
                 retry_or_error_event_counter_list.append(True)
                 pass_flag_set.add('fail')
-
-        except ValueError:
-            # If the conversion to numbers fails, compare the string representations
+        except (ValueError, SyntaxError):
+            # If the conversion to lists fails, compare the string representations
             if stdout == str(expected_output):
                 print(f"Test Case Passed: Input = {input_values}, Expected Output = {expected_output}")
                 pass_flag_set.add('pass')
@@ -423,16 +481,24 @@ def pass_fail_unit_test_function__stdout_stderr(code_markdown, test_cases, funct
                 error_log.append(stdout)
                 retry_or_error_event_counter_list.append(True)
                 pass_flag_set.add('fail')
+        
+        except Exception as e:
+            error_log.append(stdout)
+            pass_flag_set.add('fail')
+            error_message = str(e) + process.stderr.strip()
+            return False, error_message
+            
+        
+        # Assuming the function output is directly printed, compare stdout to expected output
+        if stdout == str(expected_output):
+            print(f"Test Case Passed: Input = {input_values}, Expected Output = {expected_output}")
+            pass_flag_set.add('pass')
+        else:
+            print(f"Test Case Failed: Input = {input_values}, Expected Output = {expected_output}, Actual Output = {stdout}")
+            error_log.append(stdout)
+            pass_flag_set.add('fail')
 
-        # # Assuming the function output is directly printed, compare stdout to expected output
-        # if stdout == str(expected_output):
-        #     print(f"Test Case Passed: Input = {input_values}, Expected Output = {expected_output}")
-        #     pass_flag_set.add('pass')
-        # else:
-        #     print(f"Test Case Failed: Input = {input_values}, Expected Output = {expected_output}, Actual Output = {stdout}")
-        #     error_log.append(stdout)
-        #     pass_flag_set.add('fail')
-
+    
     if pass_flag_set == {'pass'}:
         return 'pass', ''
     else:
@@ -5338,11 +5404,11 @@ def do_task_please(
                             pipes_open_solution_body_nocontext
                         """
 
-                        if not function_writing:
+                        if function_writing:
                                 ############
                                 # Pipes |||
                                 ############
-                                if task_mode_output_structure_mode == "markdowwn":
+                                if task_mode_output_structure_mode == "markdown":
                                     ############
                                     # Open Task: use context dict list
                                     ############
@@ -5350,73 +5416,70 @@ def do_task_please(
 
                                     {this_task}
 
-                                    Put your python code in markdown ```python #code here ```, 
-                                    Without hard-coding any answers into the function.
+                                    Put your python code in markdown format (three pips)
+                                    without hard-coding any answers into the function.
                                     
-                                    
-                                    Any other comments or plans write outside of the python markdown and write before you write the function. Only the function
-                                    in the markdown last.
-                                    
+                                    Write any other comments or plans before you write the function 
+                                    and outside of the python markdown.
                                     """
                                     
                                 else:
                                     print(
-                                        f""" exit: prompt selection 1: option problem task_mode_output_structure_mode {task_mode_output_structure_mode}"""
+                                        f"""not multiple-choice exit: prompt selection 1: option problem task_mode_output_structure_mode {task_mode_output_structure_mode}"""
                                     )
                                     sys.exit()
+ 
+                        #############
+                        # if context
+                        #############
+                        elif task_mode_use_history_context_dict_list:
+                            # TODO: make context dict list maker
+
+                            ############
+                            # Pipes |||
+                            ############
+                            if task_mode_output_structure_mode == "pipes":
+                                ############
+                                # Open Task: use context dict list
+                                ############
+                                context_history = f"""
+
+                                What is the best response for this task? 
+                                {this_task}
+
+                                Give your answer in this format:
+                                {pipes_open_solution_body_nocontext}
+
+                                """
+
+                            ##############
+                            # {dict: ...}
+                            ##############
+                            elif task_mode_output_structure_mode == "dict":
+                                ############
+                                # Open Task: use context dict list
+                                ############
+                                context_history = f"""
+
+                                What is the best response for this task? 
+                                {this_task}
+
+                                Give your answer in this format:
+                                {dict_open_solution_body_nocontext}
+
+                                """
+                            else:
+                                print(
+                                    f"""not function not multiple-choice exit: prompt selection 1: option problem task_mode_output_structure_mode {task_mode_output_structure_mode}"""
+                                )
+                                sys.exit()
+
                             
-                        else:     
-                            #############
-                            # if context
-                            #############
-                            if task_mode_use_history_context_dict_list:
-                                # TODO: make context dict list maker
-
-                                ############
-                                # Pipes |||
-                                ############
-                                if task_mode_output_structure_mode == "pipes":
-                                    ############
-                                    # Open Task: use context dict list
-                                    ############
-                                    context_history = f"""
-
-                                    What is the best response for this task? 
-                                    {this_task}
-
-                                    Give your answer in this format:
-                                    {pipes_open_solution_body_nocontext}
-
-                                    """
-
-                                ##############
-                                # {dict: ...}
-                                ##############
-                                elif task_mode_output_structure_mode == "dict":
-                                    ############
-                                    # Open Task: use context dict list
-                                    ############
-                                    context_history = f"""
-
-                                    What is the best response for this task? 
-                                    {this_task}
-
-                                    Give your answer in this format:
-                                    {dict_open_solution_body_nocontext}
-
-                                    """
-                                else:
-                                    print(
-                                        f""" exit: prompt selection 1: option problem task_mode_output_structure_mode {task_mode_output_structure_mode}"""
-                                    )
-                                    sys.exit()
-
-                                
 
                         ################
                         # if NO context
                         ################
-                        if not task_mode_use_history_context_dict_list:
+                        elif not task_mode_use_history_context_dict_list:
 
                             ############
                             # Pipes |||
@@ -5529,7 +5592,7 @@ def do_task_please(
 
                             else:
                                 print(
-                                    f""" exit: prompt selection 1: option problem task_mode_output_structure_mode {task_mode_output_structure_mode}"""
+                                    f""" multiple choice if context exit: prompt selection 1: option problem task_mode_output_structure_mode {task_mode_output_structure_mode}"""
                                 )
                                 sys.exit()
 
@@ -5586,7 +5649,7 @@ def do_task_please(
 
                             else:
                                 print(
-                                    f""" exit: prompt selection 1: option problem task_mode_output_structure_mode {task_mode_output_structure_mode}"""
+                                    f""" multiple choice if NO context, exit: prompt selection 1: option problem task_mode_output_structure_mode {task_mode_output_structure_mode}"""
                                 )
                                 sys.exit()
 
@@ -6515,7 +6578,7 @@ task_file_config_dic_list = [
     #     "use_offset_and_range": True,
     # },
     {
-        "file_name": "write_a_make_a_function_challenge2.jsonl",
+        "file_name": "code_writing_test_set_5.jsonl",
         "file_type": ".jsonl",
         "header_exits": False,
         "file_structure": "",
@@ -6536,14 +6599,42 @@ task_file_config_dic_list = [
         "function_test_cases__field_name": "test_cases",
         "function_name__field_name": "function_name",     
 
-        "output_structure_mode": "pipes",
+        "output_structure_mode": "markdown",
         "input_state_context_mode": "one_string",
         "ranked_choice_output_structure_mode": "pipes",
         "this_offset": 0,
         "this_range_inclusive": 1,
         "use_offset_and_range": False,
     },
+   # {
+   #      "file_name": "short_code_writing_test_set_1.jsonl",
+   #      "file_type": ".jsonl",
+   #      "header_exits": False,
+   #      "file_structure": "",
+   #      "index_of_task": None,
+   #      "index_of_options": None,
+   #      # Fields
+   #      "task_field_name": "task",
+   #      "options_field_name": "options",
+   #      "scoring_field_name": "answer_from_index_start_at_1",
+   #      "error_comment_data_lookup_table_field_name": None,
+   #      "answer_option_choices_provided": False,
+   #      "randomize_option_choices": False, 
+   #      "validate_the_answer": True,
+   #      "use_history_context_dict_list": False,
+   #      "system_instructions": False,
+        
+   #      "function_writing": True,
+   #      "function_test_cases__field_name": "test_cases",
+   #      "function_name__field_name": "function_name",     
 
+   #      "output_structure_mode": "markdown",
+   #      "input_state_context_mode": "one_string",
+   #      "ranked_choice_output_structure_mode": "pipes",
+   #      "this_offset": 0,
+   #      "this_range_inclusive": 1,
+   #      "use_offset_and_range": False,
+   #  },
 ]
 
 #####################
@@ -6553,7 +6644,7 @@ ai_local_or_cloud_mode = "gguf"
 # ai_local_or_cloud_mode = "cloud"
 number_of_preliminary_drafts = 2
 number_of_ranked_votes = 1
-retry_x_times = 6
+retry_x_times = 2
 
 ##############
 # Pick Models
@@ -6564,10 +6655,10 @@ retry_x_times = 6
 # list_of_models = ["claude-2.1"]
 # list_of_models = ["claude-3-opus-20240229"]
 list_of_models = ["llamacorn", "tinyllama", "stablelm-zephyr-3b"]
-# list_of_models = ["mistral-7b-instruct"]
-
-
-
+list_of_models = ["mistral-7b-instruct"]
+# list_of_models = ["llamacorn", "tinyllama"]
+# list_of_models = ["llamacorn"]
+# list_of_models = ["tinyllama", "mistral-7b-instruct", "stablelm-zephyr-3b"]
 
 ######
 # Run
