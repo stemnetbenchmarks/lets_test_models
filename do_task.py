@@ -16,19 +16,22 @@ Uncomment for cloud mode
 """
 Offline and Vanilla OK!
 """
+import traceback
 import string
 import random
 import time
-import csv
 import sys
 from datetime import datetime, UTC
 import json  # Added missing import
 import re
 import subprocess
+import csv
+import html
+import glob
 
+#
 from call_llamacpp import gguf_api, mini_gguf_api
-from html_all_reports_summary_from_csv import html_for_all_reports
-from html_tally_score import html_for_all_score_tallies
+
 
 """
 .env: get your environment variables:
@@ -42,15 +45,11 @@ from html_tally_score import html_for_all_score_tallies
 # openai_api_key = userdata.get("open_ai_key")
 
 
-
 """# make a list of json files"""
 # import openai
 # from google.colab import userdata
 
 # Load environment variables from .env file
-
-
-
 
 
 def make_answers_directory_and_csv_path_header_string(
@@ -76,6 +75,7 @@ def make_answers_directory_and_csv_path_header_string(
                 solution_dir_path, exist_ok=True
             )  # Ensure the directory is created if it does not exist
         except Exception as e:
+            traceback.print_exc()
             print(f"Error creating directory {solution_dir_path}: {e}")
             return  # Exit the function if directory creation fails
 
@@ -132,7 +132,7 @@ def make_answers_directory_and_csv_path_header_string(
     with open(task_set_results_path, "a", newline="") as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(header_string_list)
-    
+
     return task_set_results_path
 
 
@@ -162,6 +162,7 @@ def list_files_in_aitaskfiles_dir(file_type_list=None):
                 file_path, exist_ok=True
             )  # Ensure the directory is created if it does not exist
         except Exception as e:
+            traceback.print_exc()
             print(f"Error creating directory {file_path}: {e}")
             return  # Exit the function if directory creation fails
 
@@ -214,6 +215,7 @@ def list_files_in_aitaskfiles_dir(file_type_list=None):
         return output_list
 
     except Exception as e:
+        traceback.print_exc()
         raise e
 
 
@@ -311,8 +313,7 @@ def create_empty_selectbest_frame(original_data, new_file_path):
 """# put translation into list_skeleton_json"""
 
 
-
-def extract_code_from_markdown(markdown_text):
+def extract_code_from_markdown(markdown_text, function_name):
     """
     requires re
     Extract the longest code block from the given Markdown text.
@@ -324,186 +325,806 @@ def extract_code_from_markdown(markdown_text):
         str: The longest code block found in the text, or an empty string if no code block is found.
 
     variation cases:
-    
+
     variations include
     ```
     ```
-    
+
     ```markdown
     ```
-    
+
     ```python
     ```
-    
+
     ```code
     ```
 
 
     """
     # Regular expression pattern to match code blocks
-    code_block_pattern = r'```(python|markdown|code)?\n([\s\S]*?)\n```'
+    code_block_pattern = r"```(python|rust|markdown|code)?\n([\s\S]*?)\n```"
     # Find all code blocks in the text
     code_blocks = re.findall(code_block_pattern, markdown_text, re.MULTILINE)
-
-    # Find the longest code block
-    longest_code_block = max(code_blocks, key=lambda x: len(x[1]), default=('', ''))
-
-    return longest_code_block[1]
+    
+    print(f"extract_code_from_markdown code_blocks -> {code_blocks}")
 
 
-import ast 
+    # """
+    # TODO
+    # Find def {function_name} or fn {function_name}
+    # """
+    # code here
+    
+    
+    # # if still more than one, Find the longest code block
+    # longest_code_block = max(code_blocks, key=lambda x: len(x[1]), default=("", ""))
+
+    # print(f"extract_code_from_markdown longest_code_block -> {longest_code_block}")
+
+    
+    # return longest_code_block[1]
+
+    # Find the code blocks containing the function definition
+    function_pattern = rf"(def|fn)\s+{function_name}\s*\("
+    matching_code_blocks = []
+    for lang, code in code_blocks:
+        if re.search(function_pattern, code, re.MULTILINE):
+            matching_code_blocks.append((lang, code))
+
+    # default
+    match = None
+
+    # If there are multiple matching code blocks, find the longest one
+    if len(matching_code_blocks) > 1:
+        print('found more than one match containing function definition')
+        longest_matching_code_block = max(matching_code_blocks, key=lambda x: len(x[1]))
+        # print(f"extract_code_from_markdown longest_matching_code_block -> {longest_matching_code_block}")
+        
+        match = longest_matching_code_block[1]
+        
+    elif len(matching_code_blocks) == 1:
+        # print(f"extract_code_from_markdown matching_code_blocks[0][1] -> {matching_code_blocks[0][1]}")
+        match = matching_code_blocks[0][1]
+        
+    if match: 
+        print(f"\n found this code: {match} \n")
+        return match
+
+    return None
+
+####################################
+# helper functions for coding layer
+####################################
+import ast
+
+
+def check_equivalent_string(expected, actual):
+    """
+    Checked if forced-type as
+    'string'
+    make these equivilant
+    """
+    try:
+        return str(expected) == str(actual)
+    except Exception as e:
+        traceback.print_exc()
+        print(str(e))
+        return False
+
+
+def check_equivalent_integer(expected, actual):
+    """
+    Checked if forced-type as
+    'int'
+    make these equivilant
+    """
+    try:
+        return int(expected) == int(actual)
+    except Exception as e:
+        traceback.print_exc()
+        print(str(e))
+        return False
+
+
+def check_equivalent_float(expected, actual, tolerance=1e-6):
+    """
+    Checked if forced-type as
+    'float'
+    make these equivilant
+    """
+    try:
+        expected_float = float(expected)
+        actual_float = float(actual)
+        return abs(expected_float - actual_float) < tolerance and (
+            expected_float < 0
+        ) == (actual_float < 0)
+    except Exception as e:
+        traceback.print_exc()
+        print(str(e))
+        return False
+
+
+def check_equivalent_boolean(expected, actual):
+    """
+    Checked if forced-type as
+    'bool'
+    make these equivilantequivalent
+    """
+    try:
+        # print('bool')
+        if isinstance(expected, bool) and isinstance(actual, bool):
+            return expected == actual
+
+    except Exception as e:
+        traceback.print_exc()
+        print(str(e))
+        return False
+
+
+def check_equivalent_none(expected, actual):
+    """
+    Checked if forced-type as
+    'None'
+    make these equivilantequivalent
+    """
+    try:
+        return expected is None and actual is None
+    except Exception as e:
+        traceback.print_exc()
+        print(str(e))
+        return False
+
+
+# helper wrapper 1: check all
+def simple_types_check_equivalent(expected, actual):
+    """
+    Check if expected and actual are equivalent using various type-specific comparison functions.
+    Returns True if any of the type-specific comparisons are True, otherwise returns False.
+    """
+    checks = [
+        check_equivalent_string,
+        check_equivalent_integer,
+        check_equivalent_float,
+        check_equivalent_boolean,
+        check_equivalent_none,
+    ]
+
+    try:
+
+        for check_func in checks:
+            if check_func(expected, actual):
+                return True
+
+        return False
+    except Exception as e:
+        traceback.print_exc()
+        print(str(e))
+        return False
+
+
+def check_equivalent_list(expected_list, actual_list_str):
+    """
+    Check if two lists are equivalent by comparing each element using the check_equivalent function.
+    The actual_list_str is expected to be a string representation of a list.
+    Returns True if the lists are equivalent, otherwise returns False.
+    """
+    try:
+        # Convert the actual_list_str to a list using ast.literal_eval
+        actual_list = ast.literal_eval(actual_list_str)
+
+        if len(expected_list) != len(actual_list):
+            # print('wrong length false')
+            return False
+
+        for expected_item, actual_item in zip(expected_list, actual_list):
+            if not simple_types_check_equivalent(expected_item, actual_item):
+                return False
+
+        return True
+
+    except (SyntaxError, ValueError):
+        # If the actual_list_str is not a valid list representation, return False
+        # print('exception')
+        return False
+
+
+def check_equivalent_dict(expected_dict, actual_dict):
+    """
+    Check if two dictionaries are equivalent by comparing each key-value pair using the check_equivalent function.
+    Returns True if the dictionaries are equivalent, otherwise returns False.
+    """
+    try:
+        if len(expected_dict) != len(actual_dict):
+            return False
+
+        for key in expected_dict:
+            if key not in actual_dict:
+                return False
+
+            expected_value = expected_dict[key]
+            actual_value = actual_dict[key]
+
+            if isinstance(expected_value, dict):
+                if not check_equivalent_dict(expected_value, actual_value):
+                    return False
+            elif isinstance(expected_value, list):
+                if not check_equivalent_list(expected_value, actual_value):
+                    return False
+            else:
+                if not simple_types_check_equivalent(expected_value, actual_value):
+                    return False
+        return True
+    except Exception as e:
+        traceback.print_exc()
+        print(str(e))
+        return False
+
+
+# helper wrapper 2: check all
+def check_equivalent_all(expected, actual):
+    """
+    Check if expected and actual are equivalent using various type-specific comparison functions.
+    Returns True if any of the type-specific comparisons are True, otherwise returns False.
+    """
+    checks = [
+        check_equivalent_string,
+        check_equivalent_integer,
+        check_equivalent_float,
+        check_equivalent_boolean,
+        check_equivalent_none,
+        check_equivalent_list,
+    ]
+
+    try:
+
+        for check_func in checks:
+            if check_func(expected, actual):
+                return True
+
+        return False
+    except Exception as e:
+        traceback.print_exc()
+        print(str(e))
+        return False
+
+
+import os
+import shutil
+import subprocess
+
+import os
+import shutil
+import subprocess
+
+# def run_rust_code(run_this_code, test_case, dependencies=None):
+#     """
+#     1. create repo called coding_challenge
+#         $ cargo new coding_challenge
+#     2. overwrite src/main.rs with code
+#     3. add dependencies to Cargo.toml (if provided)
+#     4. run unit tests
+#         $ cargo test
+#     5. check if the test passed or failed based on the expected output
+#     6. remove coding_challenge dir
+#     """
+#     # Test Case Data
+#     input_values = test_case["input"]
+#     expected_output = test_case["expected_output"]
+
+#     project_dir = "coding_challenge"
+
+#     # 1. Create the project directory
+#     os.makedirs(project_dir, exist_ok=True)
+
+#     # 2. Initialize a new Cargo project
+#     subprocess.run(["cargo", "new", "--bin", project_dir], check=True)
+
+#     # 3. Overwrite src/main.rs with the provided code
+#     main_rs_path = os.path.join(project_dir, "src", "main.rs")
+#     with open(main_rs_path, "w") as f:
+#         f.write(run_this_code)
+
+#     # 4. Add dependencies to Cargo.toml (if provided)
+#     if dependencies:
+#         cargo_toml_path = os.path.join(project_dir, "Cargo.toml")
+#         with open(cargo_toml_path, "a") as f:
+#             f.write("\n[dependencies]\n")
+#             for dep_name, dep_version in dependencies.items():
+#                 f.write(f"{dep_name} = \"{dep_version}\"\n")
+
+#     # 5. Run unit tests
+#     os.chdir(project_dir)
+#     test_result = subprocess.run(["cargo", "test"], capture_output=True, text=True)
+#     stdout = test_result.stdout
+
+#     # 6. Check if the test passed or failed based on the expected output
+#     test_passed = str(expected_output) in stdout
+
+#     # 7. Remove the project directory
+#     os.chdir("..")
+#     shutil.rmtree(project_dir)
+
+#     return test_passed
+
+import os
+import shutil
+import subprocess
+
+def run_rust_code(extracted_code, testcases_list, function_name, dependencies=None):
+    """
+    1. create repo called coding_challenge
+        $ cargo new coding_challenge
+    2. create a code test script based on the test case data
+        input & expected output
+     
+    3. make script with BOTH function AND code-test
+    4. write BOTH function AND code-test to src/main.rs
+    5. add dependencies to Cargo.toml (if provided)
+    6. run cargo test
+        $ cargo test
+        test the expected output inside the rust test
+        output pass/fail (or equivilant)
+    7. get test result (passed or failed), stdout, stderr
+    8. remove coding_challenge dir
+    9. Return 'pass' or 'fail' with stdout, stderr
+    """
+    stdout = ''
+    stderr = ''
+
+    print("\n Starting run_rust_code(extracted_code, testcases_list, function_name, dependencies=None")
+
+    print('extracted_code', extracted_code)
+    print('testcases_list', testcases_list)
+    print('function_name', function_name)
+    print('dependencies', dependencies)
+
+    try:
+        project_dir = "coding_challenge"
+
+        # if directory exists, remove it. 
+        if os.path.isdir(project_dir):
+            shutil.rmtree(project_dir)
+
+
+        # 1. Initialize a new Cargo project (this creates directory)
+        # why --bin?
+        subprocess.run(["cargo", "new", "--bin", project_dir], check=True)
+
+        # 2. Make test script
+        """
+        e.g.
+        #[cfg(test)]
+        mod tests {
+            use super::*;
+
+            #[test]
+            fn test_add() {
+                assert_eq!(add(2, 3), 5);
+                assert_eq!(add(5, -3), 2);
+                assert_eq!(add(-4, -6), -10)    }
+        }    
+        """
+        
+        """
+        Construct code test
+        """
+        test_script = "#[cfg(test)]\n"
+        test_script += "mod tests {\n"
+        test_script += "    use super::*;\n"
+        test_script += "\n"
+        test_script += "    #[test]\n"
+        test_script += "    fn test_add() {\n"
+        
+        for this_testcase in testcases_list:
+            # extract Test Case Data
+            input_values = this_testcase["input"]
+            expected_output = this_testcase["expected_output"]
+            
+            """
+            Construct code test values string
+            """
+            input_values_string = ', '.join(map(str, input_values))
+            # input_values_string = ''
+            # for this_value in input_values:
+            #     input_values_string += str(this_value)
+            #     input_values_string += ','
+            
+            test_script += f"        assert_eq!({function_name}({input_values_string}), {expected_output});\n"
+        
+        test_script += "}\n" 
+        test_script += "}\n" 
+        
+        # 3: make overall script
+        run_this_code = extracted_code + "\n" + test_script
+        
+        print('run_this_code', run_this_code)
+        
+        # 4. Overwrite src/main.rs with the provided code
+        main_rs_path = os.path.join(project_dir, "src", "main.rs")
+        with open(main_rs_path, "w") as f:
+            f.write(run_this_code)
+
+        # 5. Add dependencies to Cargo.toml (if provided)
+        if dependencies:
+            cargo_toml_path = os.path.join(project_dir, "Cargo.toml")
+            with open(cargo_toml_path, "a") as f:
+                f.write("\n[dependencies]\n")
+                for dep_name, dep_version in dependencies.items():
+                    f.write(f"{dep_name} = \"{dep_version}\"\n")
+
+        # 6. Run unit tests
+        os.chdir(project_dir)
+        test_result = subprocess.run(["cargo", "test"], capture_output=True, text=True)
+
+        # 7. results
+        stdout = test_result.stdout
+        stderr = test_result.stderr
+        all_output = stdout + stderr
+        # maybe extract a pass/fail? what is cargos output format?
+
+        print(f"""rust output 
+
+            rust stdout -> {stdout} 
+
+
+            rust stderr ->  {stderr}
+
+            """)
+
+        # Regular expression pattern to match the test result
+        pattern = r"test result: (\w+)\. (\d+) passed; (\d+) failed;"
+
+        # default
+        match = None
+        # Search for the pattern in the output
+        match = re.search(pattern, stdout)
+        print(f"regex match -> {match}")
+
+        pass_fail_result = 'fail'
+
+        if match:
+            result = match.group(1)
+            passed = int(match.group(2))
+            failed = int(match.group(3))
+            print(f"Tests Passed or failed. Passed: {passed}, Failed: {failed}")
+            
+            if result == "ok" and failed == 0:
+                print("All tests passed!")
+                pass_fail_result = 'pass'
+                stdout = 'pass'
+                stderr = ''
+            else:
+                print(f"Tests failed. Passed: {passed}, Failed: {failed}")
+                pass_fail_result = 'fail'
+        else:
+            print("No success match found")
+            pass_fail_result = 'fail'
+            
+        # 8. The myth of the eternal return
+        if pass_fail_result == 'fail':
+
+            pattern = r"^error\[([A-Z0-9]+)\]: (.*)$"
+            errors = re.findall(pattern, all_output, re.MULTILINE)
+            error_set = set(f"Error Number: {error_num}, Description: {error_desc.strip()}" for error_num, error_desc in errors)
+            error_set_string = ', '.join(str(item) for item in error_set)
+            
+            print("error_set", error_set_string)
+            stderr = error_set_string
+
+        print(f"returning")
+        print(f"pass_fail_result -> {pass_fail_result}")
+        print(f"stdout -> {stdout}")
+        print(f"stderr -> {stderr}")
+        return pass_fail_result, stdout, stderr
+        # return stdout, stderr
+
+    except Exception as e:
+        traceback.print_exc()
+        print("Issue:", str(e))
+        return 'fail', None, 'fail'
+
+    finally:
+        # 9. Remove the project directory
+        os.chdir("..")
+        shutil.rmtree(project_dir)
+
+def run_code_in_subprocess(
+    extracted_code, 
+    test_cases, 
+    function_name, 
+    this_testcase, 
+    programming_language,
+    dependencies=None):
+    """
+    for javascript/typescript, 
+    other packages need to be installed
+    
+    input_values list is for the code test case
+    """
+    try:
+        print("\n Starting run_code_in_subprocess()")
+        print(f"extracted_code -> {extracted_code}")
+        print(f"test_cases -> {test_cases}")
+        print(f"function_name -> {function_name}")
+        print(f"this_testcase -> {this_testcase}")
+        print(f"programming_language -> {programming_language}")
+        print(f"dependencies -> {dependencies}")
+        
+        if this_testcase:
+            input_values = this_testcase["input"]
+            expected_output = this_testcase["expected_output"]
+        ######################################
+        # Pathways for programmming languages
+        ######################################
+        if programming_language == 'python':
+
+
+            # run only function the requested in the script
+            run_this_code = f"{extracted_code}\n\nif __name__ == '__main__': print({function_name}(*{input_values}))"
+
+            print('selected python')
+            process = subprocess.run(
+                [sys.executable, "-c", run_this_code],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                universal_newlines=True,
+            )
+
+            print(f"python output -> {process}")
+
+            stdout = getattr(process, "stdout", "").strip()
+            stderr = getattr(process, "stderr", "").strip()
+
+            process_proxy_return_dict = {
+                'stdout':stdout,
+                'stderr':stderr
+            }
+            return process_proxy_return_dict
+
+        elif programming_language == 'rust':
+            print("language, rust in run_code_in_subprocess()")
+        
+            score, stdout, stderr = run_rust_code(
+                extracted_code, 
+                test_cases, 
+                function_name, 
+                dependencies=None)
+            
+            print(f"""
+                the rust 
+                score -> {score}
+                stdout -> {stdout}
+                stderr -> {stderr}""")
+            
+            if score == 'pass':
+                process_proxy_return_dict = {
+                    'stdout': score,
+                    'stderr': stdout + stderr
+                }
+                return process_proxy_return_dict
+
+            else:
+                process_proxy_return_dict = {
+                    'stdout': 'fail',
+                    'stderr': stdout + stderr
+                }
+                return process_proxy_return_dict
+        
+        elif programming_language == 'javascript':
+            print('selected javascript')
+            # Execute JavaScript code using Node.js
+            process = subprocess.run(
+                ["node", "-e", run_this_code],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                universal_newlines=True,
+            )
+
+            # Execute JavaScript code using Node.js
+            if isinstance(js_process, subprocess.CompletedProcess):
+                stdout, stderr = js_process.stdout, js_process.stderr
+
+                process_proxy_return_dict = {
+                    'stdout':stdout,
+                    'stderr':stderr
+                }
+                return process_proxy_return_dict
+
+        elif programming_language == 'typescript':
+            print('selected typescript')
+            # Execute TypeScript code using Node.js with ts-node
+            process = subprocess.run(
+                ["ts-node", "-e", run_this_code],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                universal_newlines=True,
+            )
+
+            if isinstance(ts_process, subprocess.CompletedProcess):
+                stdout, stderr = ts_process.stdout, ts_process.stderr
+
+                process_proxy_return_dict = {
+                    'stdout':stdout,
+                    'stderr':stderr
+                }
+                return process_proxy_return_dict
+        
+        else:  # if no matching language 
+            print('no output, defaulting to fail')
+            process_proxy_return_dict = {
+                'stdout': None,
+                'stderr': f'no known language ? -> {programming_language}'
+            }
+            return process_proxy_return_dict
+
+        # default if no other return
+        process_proxy_return_dict = {
+            'stdout': None,
+            'stderr': 'unable to run'
+        }
+        return process_proxy_return_dict
+    
+    except Exception as e:
+        traceback.print_exc()
+        print(f"run_code_in_subprocess() failed error = {str(e)}")
+        process_proxy_return_dict = {
+            'stdout':'',
+            'stderr':str(e)
+        }
+
+        return process_proxy_return_dict
+
+###################################
 # helper function for coding layer
-def pass_fail_unit_test_function__stdout_stderr(code_markdown, test_cases, function_name, retry_or_error_event_counter_list, error_log):
+# TODO: how is this returning the words stdout stderr?
+def pass_fail_unit_test_function__stdout_stderr(
+    code_markdown,
+    test_cases,
+    function_name,
+    retry_or_error_event_counter_list,
+    error_log,
+    programming_language,
+    dependencies=None
+):
     """
     standard issues:
     - input() is not allowed
-    - 
+    -
     ```
     def calculate_area(x,y):\n
         return x*y
     ```
-    # Function to extract code from markdown, assuming it's already defined
-    # Function to create_challenge_json, assuming it's already defined
-
-    # Assuming challenge_data and other necessary variables are already defined
-
-    # Example usage: Get the code from the test-taker (in Markdown format)
-    code_markdown = input
-
-    # Load the challenge JSON file to get function name and test cases
-    with open("challenge.json", "r") as file:
-    challenge_data = json.load(file)
-
-    function_name = challenge_data["function_name"]
-    test_cases = challenge_data["test_cases"]
-
-    # Run the test
-    run_test(code_markdown, test_cases, function_name)
     """
-    
+
     # Extract the code from the Markdown
-    extracted_code = extract_code_from_markdown(code_markdown)
-
-    pass_flag_set = set()
+    extracted_code = extract_code_from_markdown(code_markdown, function_name)
     
-    # print(f"""
-    #     Input inspection: pass_fail_unit_test_function__stdout_stderr()
+    if not extracted_code:
+        print('warning, no code extracted')
+        return False, f"This is not code correctly formated in markdown: {code_markdown}"
+
+    if programming_language == 'rust':
+        print('rust selected in pass_fail_unit_test_function__stdout_stderr()')
         
-    #     code_markdown -> {code_markdown} {type(code_markdown)}
-    #     test_cases -> {test_cases} {type(test_cases)}
-    #     function_name -> {function_name} {type(function_name)}
-    #     retry_or_error_event_counter_list -> {retry_or_error_event_counter_list} {type(retry_or_error_event_counter_list)}
-    #     error_log -> {error_log} {type(error_log)}
+        this_testcase = ''
+        rust_result = run_code_in_subprocess(
+            extracted_code, 
+            test_cases, 
+            function_name, 
+            this_testcase, 
+            programming_language,
+            dependencies=None)
         
-    #     Extracted:
-    #     extracted_code -> {extracted_code} {type(extracted_code)}
+        print(f"rust_result -> {rust_result}")
+        # set two outputs
+        stdout = rust_result['stdout']
+        stderr = rust_result['stderr']
 
-    #     """)
+        # log error if fail
+        if rust_result['stdout'] == 'fail':
+            print("rust: No stdout found. Fail as error.")
+            stdout = False
+            error_log.append(rust_result['stderr'])
 
-    for test_case in test_cases:
-        input_values = test_case["input"]
-        expected_output = test_case["expected_output"]
-        
-        """
-        Construct the full script with the test case applied
-        This script defines the function from the markdown, 
-        then calls it with the current test case's inputs
-        """
-        extracted_code = extracted_code.replace("print(", "# print(")
-        # extracted_code = extracted_code.replace("\nprint(", "# print(")
-        extracted_code = extracted_code.replace("input()", "'error_no_input_allowed'")
-            
-        
-        # full_script = f"{extracted_code}\n\nprint({function_name}(*{input_values}))"
-        # full_script = f"{extracted_code}\n\nif __name__ == '__main__':\n    print({function_name}(*{input_values}))"
-        # to avoid tab-intent issues
-        full_script = f"{extracted_code}\n\nif __name__ == '__main__': print({function_name}(*{input_values}))"
+        # return no stdout if error or fail
+        return stdout, stderr
+    
+    for this_testcase in test_cases:
 
-        # Run the full script using subprocess
-        process = subprocess.run(
-            [sys.executable, "-c", full_script],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            universal_newlines=True,
-        )
-
-        stdout = process.stdout.strip()
-        stderr_plus = 'Feedback: This code ' + extracted_code + ' lead to this error: ' + process.stderr.strip() + ', stdout: ' + stdout + "Try again: "
-
-        # # Compare the actual output with the expected output
-        # try:
-        #     # Try to evaluate the actual output and expected output as numbers
-        #     actual_output = float(stdout)
-        #     expected_output = float(expected_output)
-
-        #     if abs(actual_output - expected_output) < 1e-9:
-        #         print(f"Test Case Passed: Input = {input_values}, Expected Output = {expected_output}")
-        #         pass_flag_set.add('pass')
-        #     else:
-        #         print(f"Test Case Failed: Input = {input_values}, Expected Output = {expected_output}, Actual Output = {actual_output}")
-        #         error_log.append(stdout)
-        #         retry_or_error_event_counter_list.append(True)
-        #         pass_flag_set.add('fail')
-
-        # except ValueError:
-        #     # If the conversion to numbers fails, compare the string representations
-        #     if stdout == str(expected_output):
-        #         print(f"Test Case Passed: Input = {input_values}, Expected Output = {expected_output}")
-        #         pass_flag_set.add('pass')
-        #     else:
-        #         print(f"Test Case Failed: Input = {input_values}, Expected Output = {expected_output}, Actual Output = {stdout}")
-        #         error_log.append(stdout)
-        #         retry_or_error_event_counter_list.append(True)
-        #         pass_flag_set.add('fail')
-
-        # Import the ast module to safely evaluate string representations of lists
-
-        # Compare the actual output with the expected output
         try:
-            # Try to evaluate the actual output and expected output as lists
-            actual_output = ast.literal_eval(stdout)
-            expected_output = ast.literal_eval(expected_output)
-            if actual_output == expected_output:
-                print(f"Test Case Passed: Input = {input_values}, Expected Output = {expected_output}")
-                pass_flag_set.add('pass')
-            else:
-                print(f"Test Case Failed: Input = {input_values}, Expected Output = {expected_output}, Actual Output = {actual_output}")
-                error_log.append(stdout)
-                retry_or_error_event_counter_list.append(True)
-                pass_flag_set.add('fail')
-        except (ValueError, SyntaxError):
-            # If the conversion to lists fails, compare the string representations
-            if stdout == str(expected_output):
-                print(f"Test Case Passed: Input = {input_values}, Expected Output = {expected_output}")
-                pass_flag_set.add('pass')
-            else:
-                print(f"Test Case Failed: Input = {input_values}, Expected Output = {expected_output}, Actual Output = {stdout}")
-                error_log.append(stdout)
-                retry_or_error_event_counter_list.append(True)
-                pass_flag_set.add('fail')
-        
-        except Exception as e:
-            error_log.append(stdout)
-            pass_flag_set.add('fail')
-            error_message = str(e) + process.stderr.strip()
-            return False, error_message
-            
-        
-        # Assuming the function output is directly printed, compare stdout to expected output
-        if stdout == str(expected_output):
-            print(f"Test Case Passed: Input = {input_values}, Expected Output = {expected_output}")
-            pass_flag_set.add('pass')
-        else:
-            print(f"Test Case Failed: Input = {input_values}, Expected Output = {expected_output}, Actual Output = {stdout}")
-            error_log.append(stdout)
-            pass_flag_set.add('fail')
+            input_values = this_testcase["input"]
+            expected_output = this_testcase["expected_output"]
 
-    
-    if pass_flag_set == {'pass'}:
-        return 'pass', ''
-    else:
-        return False, stderr_plus
-        
+            """
+            Construct the full script with the test case applied
+            This script defines the function from the markdown, 
+            then calls it with the current test case's inputs
+            """
+            extracted_code = extracted_code.replace("print(", "# print(")
+            # extracted_code = extracted_code.replace("\nprint(", "# print(")
+            extracted_code = extracted_code.replace(
+                "input()", "'error_no_input_allowed'"
+            )
+
+            # # run only function the requested in the script
+            # run_this_code = f"{extracted_code}\n\nif __name__ == '__main__': print({function_name}(*{input_values}))"
+            
+            # # Python version: Run the 'run_this_code' script using subprocess
+            # process = subprocess.run(
+            #     [sys.executable, "-c", run_this_code],
+            #     stdout=subprocess.PIPE,
+            #     stderr=subprocess.PIPE,
+            #     universal_newlines=True,
+            # )
+            
+            # multi-languaeg-version
+            process = run_code_in_subprocess(extracted_code, test_cases, function_name, this_testcase, programming_language)
+
+            # read stdout and std err
+            stdout = process['stdout']
+            stderr = process['stderr']
+            
+            stderr_plus = (
+                "Feedback: This code "
+                + extracted_code
+                + " lead to this error: "
+                + stderr
+                + ", stdout: "
+                + stdout
+                + "Try again: "
+            )
+
+
+            print(f"\n after run_code_in_subprocess:")
+            print(f"expected_output -> {expected_output} {type(expected_output)}")
+            print(f"stdout -> {stdout} {type(stdout)}")
+            print(f"stderr -> {stderr} {type(stderr)}")
+
+            if not stdout:
+                print("No stdout found. Fail as error.")
+                error_log.append(stderr)
+                return False, stderr_plus
+
+            actual_output = stdout
+
+        except Exception as e:
+            traceback.print_exc()
+            error_message = str(e)
+            return False, error_message
+
+        # Compare the actual_output output with the expected output
+        try:
+            print('Valid-ish stdout:')
+            print(f"expected_output -> {expected_output} {type(expected_output)}")
+            print(f"actual_output -> {actual_output}")
+
+            boolean_check = check_equivalent_all(expected_output, actual_output)
+
+            if boolean_check is True:
+                print(
+                    f"Test Case Passed: Input = {input_values}, Expected Output = {expected_output}"
+                )
+                return "pass", ""
+
+            else:
+                print(
+                    f"Test Case Failed: Input = {input_values}, Expected Output = {expected_output}, Actual Output = {stdout}"
+                )
+                # error_log.append(f"test cases: {str(test_cases)}")
+                error_log.append(stdout)
+                error_log.append(stderr)
+                retry_or_error_event_counter_list.append(True)
+                return False, stderr_plus
+
+        except Exception as e:
+            traceback.print_exc()
+            # error_log.append(f"test cases: {str(test_cases)}")
+            error_log.append(stdout)
+            error_message = str(e) + process.stderr.strip()
+            error_log.append(error_message)
+            retry_or_error_event_counter_list.append(True)
+            return False, error_message
+
 
 # Helper Function
 def populate_skeleton_json_with_data(skeleton_json, source_data):
@@ -572,6 +1193,7 @@ def save_json_to_file(input_text, file_name, target_language, optional_tag=""):
                 directory_path, exist_ok=True
             )  # Ensure the directory is created if it does not exist
         except Exception as e:
+            traceback.print_exc()
             print(f"Error creating directory {directory_path}: {e}")
             return  # Exit the function if directory creation fails
 
@@ -615,6 +1237,7 @@ def set_save_json_to_file(input_text, file_name, target_language, optional_tag="
                 directory_path, exist_ok=True
             )  # Ensure the directory is created if it does not exist
         except Exception as e:
+            traceback.print_exc()
             print(f"Error creating directory {directory_path}: {e}")
             return  # Exit the function if directory creation fails
 
@@ -1027,8 +1650,6 @@ api async
 """
 
 
-
-
 """
 # mode: [{"role": "user", "content": "say yes"}]
 
@@ -1111,7 +1732,6 @@ def add_to_and_return_context_history(user_input, context_history, role):
     return context_history
 
 
-
 def find_matching_file_paths(file_paths, target_file_name):
     """
     Finds and returns all paths from a list of file paths that match the target file name.
@@ -1133,7 +1753,6 @@ def find_matching_file_paths(file_paths, target_file_name):
 
     # return one path
     return matching_paths[0]
-
 
 
 # Helper Function
@@ -1183,7 +1802,7 @@ def counter(timeout=10):
     return count
 
 
-def replace_special_characters_with_text(input_item):
+def replace_special_characters_with_text_swap(input_item):
 
     if not isinstance(input_item, str):
 
@@ -1211,6 +1830,274 @@ def replace_special_characters_with_text(input_item):
     return input_item
 
 
+from html import escape
+
+
+def make_html_report(target_csv_file_sources_dir, path_out):
+    """
+    Return error and instruction data to normal text.
+
+    Todo
+    Maybe use set for error to remove duplicates...
+    """
+
+    csv_files = glob.glob(os.path.join(target_csv_file_sources_dir, "*.csv"))
+
+    # remove "score_report.csv" from list
+    csv_files.remove("task_set_results_files/score_report.csv")
+    # print(csv_files)
+
+    try:
+        html_content = """
+        <html>
+        <head>
+            <title>CSV Summary</title>
+            <style>
+                table, th, td {
+                    border: 1px solid black;
+                    border-collapse: collapse;
+                    padding: 5px;
+                    text-align: center;
+                }
+            </style>
+        </head>
+        <body>
+            <h1>CSV Summary</h1>
+            <table>
+                <tr>
+                    <th>Score</th>
+                    <th>Selected Option</th>
+                    <th>Correct Option</th>
+                    <th>Task Failure Comment</th>
+                    <th>Name of Model</th>
+                    <th>Task File</th>
+                    <th>Task from Instructions</th>
+                    <th>Retries</th>
+                    <th>Error Log</th>
+                    <th>Duration of Single Task</th>
+                    <th>Readable Timestamp</th>
+                </tr>
+        """
+
+        for csv_file in csv_files:
+
+            print(f"in make_html_report(), This csv_file -> {csv_file}")
+
+            try:
+                with open(csv_file, "r") as csvfile:
+                    csvreader = csv.DictReader(csvfile)
+                    for row in csvreader:
+
+                        # selected option
+
+                        html_content += """
+                            <tr>
+                                <td>{score}</td>
+                                <td>{selected_option}</td>
+                                <td>{correct_option}</td>
+                                <td>{task_failure_comment}</td>
+                                <td>{name_of_model}</td>
+                                <td>{task_file}</td>
+                                <td>{task_from_instructions}</td>
+                                <td>{retry_counter}</td>
+                                <td>{error_log}</td>
+                                <td>{duration_of_single_task}</td>
+                                <td>{readable_timestamp}</td>
+                            </tr>
+                        """.format(
+                            score=escape(row["score"]),
+                            selected_option=escape(row["selected_option"]),
+                            correct_option=escape(row["correct_option"]),
+                            task_failure_comment=escape(row["task_failure_comment"]),
+                            name_of_model=escape(row["name_of_model"]),
+                            task_file=escape(row["task_file"]),
+                            task_from_instructions=escape(
+                                replace_text_with_special_characters_swapback(
+                                    row["task_from_instructions"]
+                                )
+                            ),
+                            retry_counter=escape(row["retry_counter"]),
+                            error_log=escape(
+                                replace_text_with_special_characters_swapback(
+                                    row["error_log"]
+                                )
+                            ),
+                            duration_of_single_task=escape(
+                                row["duration_of_single_task"]
+                            ),
+                            readable_timestamp=escape(row["readable_timestamp"]),
+                        )
+            except Exception as e:
+                traceback.print_exc()
+                print(f"No dice on file -> {csv_file}, error -> {e}")
+                print("")
+
+        html_content += """
+            </table>
+        </body>
+        </html>
+        """
+
+        with open(path_out, "w", encoding="utf-8") as html_file:
+            html_file.write(html_content)
+        print(f"HTML summary generated successfully!")
+    except Exception as e:
+        traceback.print_exc()
+        print(f"No dice on generating HTML summary -> {e}")
+        print("")
+
+
+def html_for_all_reports():
+
+    date_time = datetime.now()
+    clean_timestamp = date_time.strftime("%Y%m%d%H%M%S%f")
+
+    target_csv_file_sources_dir = "task_set_results_files"
+    report_destination = f"task_set_results_files/HTML_summary_{clean_timestamp}.html"
+
+    make_html_report(target_csv_file_sources_dir, report_destination)
+
+
+
+def make_score_tally_html_report(target_csv_file_sources_dir, path_out):
+    """
+    works with
+    html_for_all_score_tallies()
+    """
+    csv_files = glob.glob(os.path.join(target_csv_file_sources_dir, "*.csv"))
+
+    # get files only that say 'score report'
+    csv_files = [item for item in csv_files if "score_report" in item]
+
+    print(f"For this many tallieses: {len(csv_files)}")
+
+
+    try:
+        html_content = """
+        <html>
+        <head>
+            <title>Score Tally Summary</title>
+            <style>
+                table, th, td {
+                    border: 1px solid black;
+                    border-collapse: collapse;
+                    padding: 5px;
+                    text-align: center;
+                }
+            </style>
+        </head>
+        <body>
+            <h1>Score Tally Summary</h1>
+            <table>
+                <tr>
+                    <th>Percent</th>
+                    <th>Model</th>
+                    <th>Task File</th>
+                    <th>Score</th>
+                    <th>Timestamp</th>
+                </tr>
+        """
+        for csv_file in csv_files:
+                        
+            try:
+                with open(csv_file, "r") as csvfile:
+                    csvreader = csv.DictReader(csvfile)
+                    for row in csvreader:
+
+                        
+                        # remove the redundancy in the set list
+                        # Split the task_file string by comma and convert it to a set
+                        task_files = set(row["task_file"].split(", "))
+                        
+                        # Join the unique task files back into a comma-separated string
+                        row["task_file"] = ", ".join(task_files)
+
+                        
+                        html_content += """
+                            <tr>
+                                <td>{percent}</td>
+                                <td>{model}</td>
+                                <td>{task_file}</td>
+                                <td>{score}</td>
+                                <td>{time_stamp}</td>
+                            </tr>
+                        """.format(
+                            percent=html.escape(row["percent"]),
+                            model=html.escape(row["model"]),
+                            task_file=html.escape(row["task_file"]),
+                            score=html.escape(row["score"]),
+                            time_stamp=html.escape(row["time_stamp"]),
+                        )
+            except Exception as e:
+                traceback.print_exc()
+                print(f"make_score_tally_html_report(), No dice on {csv_file} -> {e}")
+                print("")
+        html_content += """
+            </table>
+        </body>
+        </html>
+        """
+        with open(path_out, "w", encoding="utf-8") as html_file:
+            html_file.write(html_content)
+        print(f"Score Tally HTML summary generated successfully!")
+    except Exception as e:
+        traceback.print_exc()
+        print(f"No dice on generating Score Tally HTML summary -> {e}")
+        print("")
+
+
+def html_for_all_score_tallies():
+    """
+    works with
+    make_score_tally_html_report(target_csv_file_sources_dir, path_out)
+    """
+    date_time = datetime.now()
+    clean_timestamp = date_time.strftime("%Y%m%d%H%M%S%f")
+    target_csv_file_sources_dir = "task_set_results_files"
+    report_destination = f"task_set_results_files/HTML_score_tally_summary_{clean_timestamp}.html"
+    make_score_tally_html_report(target_csv_file_sources_dir, report_destination)
+
+
+def replace_text_with_special_characters_swapback(input_item):
+
+    if not isinstance(input_item, str):
+
+        input_item = str(input_item)
+
+    # Remove duplicate spaces
+    # input_item = re.sub(r"\s+", " ", input_item.strip())
+
+    # # original
+    # replacements = {
+    #     ",": "(comma)",
+    #     '"': "(double quote or inverted commas)",
+    #     "'": "(single quote or apostrophe)",
+    #     "[": "(left square bracket)",
+    #     "]": "(right square bracket)",
+    #     "{": "(left curly bracket)",
+    #     "}": "(right curly bracket)",
+    #     ":": "(colon)",
+    #     "\\n": "(newline)",
+    #     "\n": "(newline)",
+    # }
+
+    reverse_replacements = {
+        "(comma)": ",",
+        "(double quote or inverted commas)": '"',
+        "(single quote or apostrophe)": "'",
+        "(left square bracket)": "[",
+        "(right square bracket)": "]",
+        "(left curly bracket)": "{",
+        "(right curly bracket)": "}",
+        "(colon)": ":",
+        "(newline)": "\n",
+    }
+
+    for char, replacement in reverse_replacements.items():
+        input_item = input_item.replace(char, replacement)
+
+    return input_item
+
 
 """
 anthropic
@@ -1218,7 +2105,6 @@ anthropic
 
 
 def simple_ask_anthropic_py(input_string, this_model):
-
     """
     import anthropic
     """
@@ -1230,9 +2116,7 @@ def simple_ask_anthropic_py(input_string, this_model):
     message = client.messages.create(
         model=this_model,
         max_tokens=1024,
-        messages=[
-            {"role": "user", "content": input_string}
-        ]
+        messages=[{"role": "user", "content": input_string}],
     )
 
     # print(message.content)
@@ -1248,22 +2132,24 @@ def simple_ask_anthropic(input_string, this_model):
     """
     "claude-2.1"
     "claude-3-opus-20240229",
-    
+
     """
 
     headers = {
         "x-api-key": anthropic_api_key,
         "anthropic-version": "2023-06-01",
-        "content-type": "application/json"
+        "content-type": "application/json",
     }
 
     data = {
         "model": this_model,
         "max_tokens_to_sample": 1024,
-        "prompt": f"\n\nHuman: {input_string}\n\nAssistant:"
+        "prompt": f"\n\nHuman: {input_string}\n\nAssistant:",
     }
 
-    response = requests.post("https://api.anthropic.com/v1/complete", headers=headers, json=data)
+    response = requests.post(
+        "https://api.anthropic.com/v1/complete", headers=headers, json=data
+    )
 
     if response.status_code == 200:
         result = response.json()
@@ -1273,11 +2159,9 @@ def simple_ask_anthropic(input_string, this_model):
 
         answer = response.text
 
-
     # print(answer)
 
     return answer
-
 
 
 """
@@ -1330,7 +2214,7 @@ def print_rec_ai(response, context_history):
     # print(type(output["choices"][0]))
 
     # extract just the 'what they said' part out
-    assistant_says = output["choices"][0]['message']['content']
+    assistant_says = output["choices"][0]["message"]["content"]
 
     # print(assistant_says)
 
@@ -1344,26 +2228,26 @@ def print_rec_ai(response, context_history):
 
 def add_to_context_history(role, comment):
 
-    if role == 'user':
+    if role == "user":
         segment = {"role": "user", "content": comment}
 
-    elif role == 'assistant':
+    elif role == "assistant":
         segment = {"role": "assistant", "content": comment}
 
-    elif role == 'system':
+    elif role == "system":
         segment = {"role": "system", "content": comment}
 
     else:
         print("add_to_context_history(role, comment)")
         print(role, comment)
-        print('error')
+        print("error")
 
     return segment
 
 
 def prompt_user(user_input, context_history):
 
-    context_history.append( add_to_context_history("user", user_input) )
+    context_history.append(add_to_context_history("user", user_input))
 
     return context_history
 
@@ -1388,22 +2272,18 @@ def go_user(user_input, context_history, use_this_model):
 
 def ask_mistral_api(context_history, use_this_model):
 
-
     # Define the endpoint URL
     endpoint_url = "https://api.mistral.ai/v1/chat/completions"
 
     # Set the headers
     headers = {
-      "Content-Type": "application/json",
-      "Accept": "application/json",
-      "Authorization": f"Bearer {mistral_api_key}"
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Authorization": f"Bearer {mistral_api_key}",
     }
 
     # Define the request body
-    request_body = {
-      "model": use_this_model,
-      "messages": context_history
-    }
+    request_body = {"model": use_this_model, "messages": context_history}
 
     #################
     #################
@@ -1415,7 +2295,7 @@ def ask_mistral_api(context_history, use_this_model):
 
     # Check the response status code
     if response.status_code != 200:
-      raise Exception(f"Error: {response.status_code} {response.text}")
+        raise Exception(f"Error: {response.status_code} {response.text}")
 
     return response
 
@@ -1438,18 +2318,16 @@ def simple_ask_mistral_cloud(input_string, use_this_model):
 
     # 2. make a generic system instruction
     generic_system_instruction = "You are helpful and answer accurately."
-    context_history.append( add_to_context_history("system", generic_system_instruction) )
+    context_history.append(add_to_context_history("system", generic_system_instruction))
 
     # 3. make system-user context: string input
-    context_history.append( add_to_context_history("user", input_string) )
+    context_history.append(add_to_context_history("user", input_string))
 
     # 4. ask mistral for that model
     response = ask_mistral_api(context_history, use_this_model)
 
-
     # Get the response data
     response_data = response.json()
-
 
     # 5. extract just the response string
 
@@ -1491,7 +2369,7 @@ def simple_ask_mistral_cloud(input_string, use_this_model):
     # print(type(output["choices"][0]))
 
     # extract just the 'what they said' part out
-    assistant_says = output["choices"][0]['message']['content']
+    assistant_says = output["choices"][0]["message"]["content"]
 
     # 6. return only reply (no 'history')
     return assistant_says
@@ -1499,8 +2377,8 @@ def simple_ask_mistral_cloud(input_string, use_this_model):
 
 def strip_non_alpha(text):
     # regex to leave only a-z characters
-    pattern = re.compile('[^a-z]')
-    return pattern.sub('', text).lower()
+    pattern = re.compile("[^a-z]")
+    return pattern.sub("", text).lower()
 
 
 def keep_talking(context_history, use_this_model):
@@ -1537,9 +2415,11 @@ def keep_talking(context_history, use_this_model):
             break
 
         else:
-            assistant_says, context_history = go_user(user_input, context_history, use_this_model)
+            assistant_says, context_history = go_user(
+                user_input, context_history, use_this_model
+            )
 
-            print( assistant_says )
+            print(assistant_says)
 
             # save dialogue so far
             dialogue_history = context_history
@@ -1551,9 +2431,9 @@ def keep_talking(context_history, use_this_model):
 # save history
 def record_history_save_files(dialogue_history):
 
-    date_time = dt.utcnow()
-    timestamp = date_time.strftime('%Y/%m/%d  %H:%M:%S:%f')
-    clean_timestamp = date_time.strftime('%Y%m%d%H%M')
+    date_time = datetime.now()
+    timestamp = date_time.strftime("%Y/%m/%d  %H:%M:%S:%f")
+    clean_timestamp = date_time.strftime("%Y%m%d%H%M")
 
     # To save the data directly as a JSON file:
 
@@ -1561,15 +2441,14 @@ def record_history_save_files(dialogue_history):
     json_data = json.dumps(dialogue_history)
 
     # Open a file for writing in JSON format
-    with open(f'json_dialog_{clean_timestamp}.json', 'w') as json_file:
+    with open(f"json_dialog_{clean_timestamp}.json", "w") as json_file:
         # Write the JSON string to the file
         json_file.write(json_data)
-
 
     # To save the data as a file readable as a script:
 
     # Create a new file for writing
-    with open(f'script_dialog_{clean_timestamp}.txt', 'w') as script_file:
+    with open(f"script_dialog_{clean_timestamp}.txt", "w") as script_file:
 
         # add timestamp
         text = timestamp + "\n\n"
@@ -1676,8 +2555,6 @@ def record_history_save_files(dialogue_history):
 # if you are not using openAI's web-api, these are commented out.
 
 
-
-
 """
 
 # !pip install -q openai
@@ -1735,6 +2612,7 @@ def record_history_save_files(dialogue_history):
 #         )
 #         result_container['completion'] = completion
 #     except Exception as e:
+traceback.print_exc()
 #         result_container['error'] = e
 
 
@@ -1764,6 +2642,7 @@ def record_history_save_files(dialogue_history):
 #         return result_container.get('completion')
 
 #     except Exception as e:
+traceback.print_exc()
 #         raise( e, f"ERROR in function: run_api_call_with_timeout(input_string)" )
 
 
@@ -1807,6 +2686,7 @@ def record_history_save_files(dialogue_history):
 #             return text
 
 #         except Exception as e:
+traceback.print_exc()
 #             print(f"an error occurred: {e}")
 #             retries += 1
 #             if retries > max_retries:
@@ -1955,6 +2835,7 @@ def record_history_save_files(dialogue_history):
 #         results = completion.choices[0].message.content
 
 #     except Exception as e:
+traceback.print_exc()
 #         print("API call function call_openai_chat_api(this_input, select_model=3) failed, error = ", e)
 #         return e
 
@@ -2013,8 +2894,9 @@ def task_extract_markdown_json_to_dict(dict_str, error_log):
             else:
                 print(f"Failed dict_str precheck")
 
-    except:
-        print(f"Failed dict_str precheck")
+    except Exception as e:
+        traceback.print_exc()
+        print(f"Failed dict_str precheck {str(e)}")
 
     # extraction 1
     try:
@@ -2025,6 +2907,7 @@ def task_extract_markdown_json_to_dict(dict_str, error_log):
             dict_str = match.group(1) if match else ""
 
     except Exception as e:
+        traceback.print_exc()
         print(
             f"\nTRY AGAIN: check_function_description_keys() extraction from markdown failed: {e}"
         )
@@ -2051,7 +2934,8 @@ def task_extract_markdown_json_to_dict(dict_str, error_log):
             )
 
     except Exception as e:
-        print(f"Failed dict_str -> {repr(dict_str)}")
+        traceback.print_exc()
+        print(f"Failed dict_str -> {repr(dict_str)} {str(e)}")
         return False
 
     print(f" dict_str -> {repr(dict_str)} {type(dict_str)}")
@@ -2075,7 +2959,8 @@ def task_extract_markdown_json_to_dict(dict_str, error_log):
             )
 
     except Exception as e:
-        print(f"Failed dict_str -> {repr(dict_str)}")
+        traceback.print_exc()
+        print(f"Failed dict_str -> {repr(dict_str)} {str(e)}")
         return False
 
     # clean
@@ -2096,6 +2981,7 @@ def task_extract_markdown_json_to_dict(dict_str, error_log):
         dict_str = dict_str.replace('",\n}', '"\n}')
 
     except Exception as e:
+        traceback.print_exc()
         print(f"\nTRY AGAIN:try safety cleaning: {e}")
         print(f"Failed repr(dict_str) -> {repr(dict_str)}")
         return False
@@ -2109,6 +2995,7 @@ def task_extract_markdown_json_to_dict(dict_str, error_log):
         dict_data = json.loads(dict_str)
 
     except Exception as e:
+        traceback.print_exc()
         print(f"\nTRY AGAIN: trying json.loads(dict_str) Dictionary load failed: {e}")
         print(f"Failed repr(dict_str) -> {repr(dict_str)}")
         return False
@@ -2119,6 +3006,7 @@ def task_extract_markdown_json_to_dict(dict_str, error_log):
         dict_str = dict_data["translation"]
 
     except Exception as e:
+        traceback.print_exc()
         print(
             f"\nTRY AGAIN: check_function_description_keys() extraction 2 from translation = dict_data['translation'] failed: {e}"
         )
@@ -2144,7 +3032,6 @@ def duration_min_sec(start_time, end_time):
     return time_message
 
 
-
 def check_answer_in_dict(answer_number, data_dict):
     print(
         f"""def check_answer_in_dict(answer_number, data_dict):
@@ -2164,7 +3051,6 @@ def check_answer_in_dict(answer_number, data_dict):
         answer_number = int(answer_number)
         data_dict = {int(key): value for key, value in data_dict.items()}
 
-
         # check for string or int form in dict of errors
         if answer_number in data_dict:
             error_reason = data_dict[answer_number]
@@ -2174,9 +3060,9 @@ def check_answer_in_dict(answer_number, data_dict):
             return None
 
     except Exception as e:
+        traceback.print_exc()
         print(f"check_answer_in_dict() issue: {str(e)}")
         return None
-
 
 
 # Helper Function
@@ -2378,7 +3264,9 @@ def remove_underscores_from_strings_in_list(list_of_strings):
 def str_to_int_or_none(string_input):
     try:
         return int(string_input)
-    except:
+    except Exception as e:
+        traceback.print_exc()
+        print(str(e))
         return None
 
 
@@ -2463,6 +3351,7 @@ def check_structure_of_response(dict_str):
             return False
 
     except Exception as e:
+        traceback.print_exc()
         print(
             f"check_structure_of_response error parsing ai translation_list -> {str(e)}"
         )
@@ -2519,20 +3408,26 @@ def task_check_structure_of_response(
 
                 matches_list = remove_non_integers_from_list(matches_list)
 
-                print(f"remove_non_integers_from_list(matches_list) matches_list ->  {matches_list}")
+                print(
+                    f"remove_non_integers_from_list(matches_list) matches_list ->  {matches_list}"
+                )
 
                 """
                 Use a list of strings of option-number-integers:
-                """          
+                """
                 # remove any 'option' this is not a real option
                 option_number_list = []
-                for this_int in range (1, len(these_original_task_options) + 1):
+                for this_int in range(1, len(these_original_task_options) + 1):
                     option_number_list.append(str(this_int))
                 print(f"option_number_list ->  {option_number_list}")
-                matches_list = [item for item in matches_list if item in option_number_list]
+                matches_list = [
+                    item for item in matches_list if item in option_number_list
+                ]
 
             if matches_list:
-                print(f"matches_list after option-number-string-only cleaned ->  {matches_list}")
+                print(
+                    f"matches_list after option-number-string-only cleaned ->  {matches_list}"
+                )
                 response_to_task = matches_list[-1]
             else:
                 response_to_task = ""
@@ -2587,6 +3482,7 @@ def task_check_structure_of_response(
             raise "No output structure mode selected: task_check_structure_of_response()"
 
     except Exception as e:
+        traceback.print_exc()
         print(
             f"Exception task_check_structure_of_response() error parsing ai response_to_task -> {str(e)}"
         )
@@ -2604,6 +3500,7 @@ def remove_non_integers_from_list(input_list):
             if isinstance(item, int) or (isinstance(item, str) and item.isdigit())
         ]
     except Exception as e:
+        traceback.print_exc()
         raise e
 
 
@@ -2641,7 +3538,8 @@ def extract_values_from_dict(dict_str):
         return values_list
 
     except Exception as e:
-        print("extract_values_from_dict failed to get values, maybe bad input")
+        traceback.print_exc()
+        print(f"extract_values_from_dict failed to get values, maybe bad input {str(e)}")
         return False
 
 
@@ -2671,9 +3569,10 @@ def return_list_of_jsons_from_string(dict_str):
             print("try extract_dictionaries_from_string_no_pips(dict_str) ")
             return extract_dictionaries_from_string_no_pips(dict_str)
 
-    except:
+    except Exception as e:
+        traceback.print_exc()
         print(
-            f"failed, no json return_list_of_jsons_from_string(dict_str) dict_str-> {dict_str}"
+            f"failed, no json return_list_of_jsons_from_string(dict_str) dict_str-> {dict_str} {str(e)}"
         )
         return False
 
@@ -2743,7 +3642,7 @@ def make_score_tally(directory_path):
     os.makedirs(solution_dir_path, exist_ok=True)
 
     report_filename = os.path.join(solution_dir_path, "score_report.csv")
-    tally_header_string_list = ["percent", "model", "score", "task_file", "time_stamp"]
+    tally_header_string_list = ["percent", "model", "task_file", "score", "time_stamp"]
 
     # # Check if the file exists and is empty to decide on writing the header
     if not os.path.exists(report_filename) or os.path.getsize(report_filename) == 0:
@@ -2778,14 +3677,19 @@ def make_score_tally(directory_path):
                                     f"name_of_model -> {model_name}"
                                 )  # Confirming model name retrieval
                                 score = int(row.get("score", 0))
-                                task_file = row.get("task_file", "")  # Get the task_file field
+                                task_file = row.get(
+                                    "task_file", ""
+                                )  # Get the task_file field
                                 report_data_dict.setdefault(
                                     # model_name, {"total": 0, "count": 0}
-                                    model_name, {"total": 0, "count": 0, "task_files": []}
+                                    model_name,
+                                    {"total": 0, "count": 0, "task_files": []},
                                 )
                                 report_data_dict[model_name]["total"] += score
                                 report_data_dict[model_name]["count"] += 1
-                                report_data_dict[model_name]["task_files"].append(task_file)  # Append task_file to the list
+                                report_data_dict[model_name]["task_files"].append(
+                                    task_file
+                                )  # Append task_file to the list
 
                                 total_scores += 1
 
@@ -2801,10 +3705,10 @@ def make_score_tally(directory_path):
             )
             # where total is correct number and count is...the total
 
-
-
             score = f"{score_total_item} / {score_count_item}"
-            task_files = ", ".join(score_data["task_files"])  # Join task_files into a comma-separated string
+            task_files = ", ".join(
+                score_data["task_files"]
+            )  # Join task_files into a comma-separated string
             report_line = [percentage, model_name, task_files, score]
             report_list.append(report_line)
 
@@ -2820,6 +3724,7 @@ def make_score_tally(directory_path):
         print(f"Report appended to {report_filename}")
 
     except Exception as e:
+        traceback.print_exc()
         print(f"Error processing score tally: {e}")
 
 
@@ -2969,6 +3874,7 @@ def get_csv_len_in_rows(path):
         return row_count
 
     except Exception as e:
+        traceback.print_exc()
         raise e
 
 
@@ -3068,17 +3974,16 @@ def call_api_within_structure_check(
         "claude-3-opus-20240229",
     ]
 
-
     # /home/oops/jan/models/mistral-ins-7b-q4/mistral-7b-instruct-v0.2.Q4_K_M.gguf
 
     # see https://platform.openai.com/docs/guides/text-generation
     open_ai_model_list = ["gpt-4", "gpt-4-turbo-preview", "gpt-3.5-turbo"]
 
-    gguf_model_list = [
-        "jais",
-        "tiny_llama",
-        "mistral7b",
-    ]
+    # gguf_model_list = [
+    #     "jais",
+    #     "tiny_llama",
+    #     "mistral7b",
+    # ]
 
     while not json_ok_flag:
 
@@ -3139,7 +4044,6 @@ def call_api_within_structure_check(
                 print(f"Anthropic api selected...{use_this_model}")
                 dict_str = simple_ask_anthropic_py(context_history, use_this_model)
 
-
             elif use_this_model in open_ai_model_list:
                 print(f"openAI api selected...{use_this_model}")
                 dict_str = openai_call_context_timeout(
@@ -3156,6 +4060,7 @@ def call_api_within_structure_check(
                 raise f"No known model option chosen...use_this_model -> {use_this_model}"
 
         except Exception as e:
+            traceback.print_exc()
             jsonchecked_translation = None
             print(f"Failed: {str(e)}")
 
@@ -3192,18 +4097,17 @@ def general_task_call_api_within_structure_check(
     retry_or_error_event_counter_list,
     error_log,
     test_cases=None,
-    function_name=None
+    function_name=None,
+    programming_language=None,
 ):
     """
     task_mode_output_structure_mode is passed to the output structure checker
     """
 
     if "function_writing" in this_task_config_dict:
-        function_writing = this_task_config_dict[
-            "function_writing"
-        ]
-    else: 
-        function_writing = False  
+        function_writing = this_task_config_dict["function_writing"]
+    else:
+        function_writing = False
 
     # default
     dict_str = ""
@@ -3227,26 +4131,25 @@ def general_task_call_api_within_structure_check(
     # see https://platform.openai.com/docs/guides/text-generation
     open_ai_model_list = ["gpt-4", "gpt-4-turbo-preview", "gpt-3.5-turbo"]
 
-    gguf_model_list = [
-        "jais",
-        "tiny_llama",
-        "mistral7b",
-    ]
+    # gguf_model_list = [
+    #     "jais",
+    #     "tiny_llama",
+    #     "mistral7b",
+    # ]
 
-    
     error_message_list_grab_last = []
-    
+
     while (not json_ok_flag) and (retry_counter < retry_x_times):
 
         ####################
         # get a translation
         ####################
-        
+
         """
-        Add the last error to the input as feedback, 
+        Add the last error to the input as feedback,
         if making a function
         and if there was an error.
-        
+
         Note: pathways other than writing code might use this too.
         """
         if error_message_list_grab_last and function_writing:
@@ -3322,8 +4225,11 @@ def general_task_call_api_within_structure_check(
                 raise f"No known model option chosen...use_this_model -> {use_this_model}"
 
         except Exception as e:
+            traceback.print_exc()
             task_response_string = None
-            print(f"\n\nMaybe incorrect model choice, use_this_model -> {use_this_model}: general_task_call_api_within_structure_check Failed: {str(e)}")
+            print(
+                f"\n\nMaybe incorrect model choice, use_this_model -> {use_this_model}: general_task_call_api_within_structure_check Failed: {str(e)}"
+            )
 
         if not dict_str:
             print(
@@ -3331,39 +4237,49 @@ def general_task_call_api_within_structure_check(
             )
             return False
 
-        
         if function_writing:
-            
+
             # print(f"""
             #     Input inspection: general_task_call_api_within_structure_check()
-                
+
             #     code_markdown:
             #     dict_str -> {dict_str} {type(dict_str)}
-                
+
             #     test_cases -> {test_cases} {type(test_cases)}
-                
+
             #     function_name -> {function_name} {type(function_name)}
-                
+
             #     retry_or_error_event_counter_list -> {retry_or_error_event_counter_list} {type(retry_or_error_event_counter_list)}
-                
+
             #     error_log -> {error_log} {type(error_log)}
 
             #     """)
-                    
 
-            task_response_string, error_message = pass_fail_unit_test_function__stdout_stderr(
-                code_markdown=dict_str, 
-                test_cases=test_cases, 
-                function_name=function_name,
-                retry_or_error_event_counter_list=retry_or_error_event_counter_list, 
-                error_log=error_log)
-            
-            if task_response_string == 'pass':
+            task_response_string, error_message = (
+                pass_fail_unit_test_function__stdout_stderr(
+                    code_markdown=dict_str,
+                    test_cases=test_cases,
+                    function_name=function_name,
+                    retry_or_error_event_counter_list=retry_or_error_event_counter_list,
+                    error_log=error_log,
+                    programming_language=programming_language,
+                    dependencies=None,
+                )
+            )
+            print(f"""
+                general_task_call_api_within_structure_check pass_fail_unit_test_function__stdout_stderr 
+                task_response_string -> {task_response_string}
+                """)
+            print(f"error_message -> {error_message}")
+
+            if task_response_string == "pass":
                 return task_response_string
-                
+
             else:
                 error_message_list_grab_last.append(error_message)
-        
+                # retry_counter += 1
+                task_response_string = None
+
         else:
             task_response_string = task_check_structure_of_response(
                 task_mode_output_structure_mode,
@@ -3373,7 +4289,7 @@ def general_task_call_api_within_structure_check(
                 retry_or_error_event_counter_list,
                 error_log,
             )
-    
+
         if task_response_string:
             json_ok_flag = True
 
@@ -3420,11 +4336,11 @@ def number_call_api_within_structure_check(
     # see https://platform.openai.com/docs/guides/text-generation
     open_ai_model_list = ["gpt-4", "gpt-4-turbo-preview", "gpt-3.5-turbo"]
 
-    gguf_model_list = [
-        "jais",
-        "tiny_llama",
-        "mistral7b",
-    ]
+    # gguf_model_list = [
+    #     "jais",
+    #     "tiny_llama",
+    #     "mistral7b",
+    # ]
 
     while not json_ok_flag:
 
@@ -3499,6 +4415,7 @@ def number_call_api_within_structure_check(
                 raise f"No known model option chosen...use_this_model -> {use_this_model}"
 
         except Exception as e:
+            traceback.print_exc()
             json_checked_value_list = None
             print(f"Failed: {str(e)}")
 
@@ -3550,11 +4467,11 @@ def task_number_call_api_within_structure_check(
     # see https://platform.openai.com/docs/guides/text-generation
     open_ai_model_list = ["gpt-4", "gpt-4-turbo-preview", "gpt-3.5-turbo"]
 
-    gguf_model_list = [
-        "jais",
-        "tiny_llama",
-        "mistral7b",
-    ]
+    # gguf_model_list = [
+    #     "jais",
+    #     "tiny_llama",
+    #     "mistral7b",
+    # ]
 
     while not json_ok_flag:
 
@@ -3615,7 +4532,6 @@ def task_number_call_api_within_structure_check(
                 print(f"Anthropic api selected...{use_this_model}")
                 dict_str = simple_ask_anthropic_py(context_history, use_this_model)
 
-
             elif use_this_model in open_ai_model_list:
                 print(f"openAI api selected...{use_this_model}")
                 dict_str = openai_call_context_timeout(
@@ -3632,6 +4548,7 @@ def task_number_call_api_within_structure_check(
                 raise f"No known model option chosen...use_this_model -> {use_this_model}"
 
         except Exception as e:
+            traceback.print_exc()
             json_checked_value_list = None
             print(f"Failed: {str(e)}")
 
@@ -3687,7 +4604,7 @@ def crawler_call_api_within_json_structure_check(
     open_ai_model_list = ["gpt-4", "gpt-4-turbo-preview", "gpt-3.5-turbo"]
 
     # TODO
-    gguf_model_list = ["jais", "tiny_llama", "mistral7b", "mistral"]
+    # gguf_model_list = ["jais", "tiny_llama", "mistral7b", "mistral"]
 
     while not json_ok_flag:
 
@@ -3775,6 +4692,7 @@ def crawler_call_api_within_json_structure_check(
                 raise f"No known model option chosen...use_this_model -> {use_this_model}"
 
         except Exception as e:
+            traceback.print_exc()
             jsonchecked_translation = None
             print(f"Failed: {str(e)}")
 
@@ -3990,6 +4908,7 @@ def extract_row_from_jsonl(this_row_or_line_number, this_path):
     except csv.Error as e:
         print(f"CSV parsing error in file {this_path}: {e}")
     except Exception as e:
+        traceback.print_exc()
         print(f"An unexpected error occurred: {e}")
 
     # Return empty list if the row was not found, an error occurred, or file cannot be parsed
@@ -4021,14 +4940,11 @@ def extract_string_value_by_path(json_object, this_path):
     return json_object_copy
 
 
-
-
-
 def randomize_list(original_list):
     """
     index from one, produces
-    randomized_list, 
-    original_to_randomized, 
+    randomized_list,
+    original_to_randomized,
     randomized_to_original
 
     # Example usage
@@ -4042,18 +4958,18 @@ def randomize_list(original_list):
     """
     # Create a copy of the original list
     randomized_list = original_list[:]
-    
+
     # Shuffle the list in-place
     random.shuffle(randomized_list)
-    
+
     # Create lookup tables
     original_to_randomized = {}
     randomized_to_original = {}
-    
+
     for i, item in enumerate(original_list, start=1):
         original_to_randomized[i] = randomized_list.index(item) + 1
         randomized_to_original[randomized_list.index(item) + 1] = i
-    
+
     return randomized_list, original_to_randomized, randomized_to_original
 
 
@@ -4336,7 +5252,9 @@ def filter_list_convert_to_int(input_list):
 
         return result
 
-    except:
+    except Exception as e:
+        traceback.print_exc()
+        print(str(e))
         return False
 
 
@@ -4771,6 +5689,7 @@ def mini_translate_json(
             #         return False
 
             # except Exception as e:
+            traceback.print_exc()
             #     print(f"\nTRY AGAIN: dict_leaf_detection_boolean_true_means_defective() empty or stub leaf found: {e}")
             #     print(f"Failed dict_str -> {dict_of_selected_best}")
             #     return False
@@ -4804,6 +5723,7 @@ def create_cvs_list_of_fields_to_csv_header(file_path, fields_list):
     except FileNotFoundError:
         print(f"File '{file_path}' not found.")
     except Exception as e:
+        traceback.print_exc()
         print(f"An error occurred: {str(e)}")
 
 
@@ -4829,6 +5749,7 @@ def append_list_of_values_to_csv(file_path, fields_list):
     except FileNotFoundError:
         print(f"File '{file_path}' not found.")
     except Exception as e:
+        traceback.print_exc()
         print(f"An error occurred: {str(e)}")
 
 
@@ -4950,48 +5871,42 @@ def do_task_please(
         # index_of_options = this_task_config_dict["index_of_options"]
         options_field_name = this_task_config_dict["options_field_name"]
         scoring_field_name = this_task_config_dict["scoring_field_name"]
-        
+
         if "function_name__field_name" in this_task_config_dict:
             function_name__field_name = this_task_config_dict[
                 "function_name__field_name"
             ]
             print(f"function_name__field_name -> {function_name__field_name}")
-        else: 
-            function_name__field_name = None    
+        else:
+            function_name__field_name = None
 
-        
         if "function_test_cases__field_name" in this_task_config_dict:
             function_test_cases__field_name = this_task_config_dict[
                 "function_test_cases__field_name"
             ]
-            print(f"function_test_cases__field_name -> {function_test_cases__field_name}")
-        else: 
-            function_test_cases__field_name = None        
-        
-        
+            print(
+                f"function_test_cases__field_name -> {function_test_cases__field_name}"
+            )
+        else:
+            function_test_cases__field_name = None
+
         if "error_comment_data_lookup_table_field_name" in this_task_config_dict:
             error_comment_data_lookup_table_field_name = this_task_config_dict[
                 "error_comment_data_lookup_table_field_name"
             ]
-        else: 
+        else:
             error_comment_data_lookup_table_field_name = None
 
         if "randomize_option_choices" in this_task_config_dict:
-            randomize_option_choices = this_task_config_dict[
-                "randomize_option_choices"
-            ]
-        else: 
+            randomize_option_choices = this_task_config_dict["randomize_option_choices"]
+        else:
             randomize_option_choices = False
 
         if "function_writing" in this_task_config_dict:
-            function_writing = this_task_config_dict[
-                "function_writing"
-            ]
-        else: 
+            function_writing = this_task_config_dict["function_writing"]
+        else:
             function_writing = False
-        
-        
-        
+
         this_offset = this_task_config_dict["this_offset"]
         this_range_inclusive = this_task_config_dict["this_range_inclusive"]
         use_offset_and_range = this_task_config_dict["use_offset_and_range"]
@@ -5086,19 +6001,23 @@ def do_task_please(
             # if directory of json files
             print(f"this_original_task_file_length -> {this_original_task_file_length}")
 
-
             # offset and range (note: dont' redefine "range" as a saved-word)
             if use_offset_and_range:
 
-                if isinstance(this_offset, int) and isinstance(this_range_inclusive, int):
+                if isinstance(this_offset, int) and isinstance(
+                    this_range_inclusive, int
+                ):
                     print("this_offset and this_range_inclusive found")
                     start = this_offset
-                    stop = min(this_offset + this_range_inclusive, this_original_task_file_length)
+                    stop = min(
+                        this_offset + this_range_inclusive,
+                        this_original_task_file_length,
+                    )
 
             else:
                 print("NO this_offset and this_range_inclusive found")
                 start = 0
-                
+
                 # set -1 because len is from 1, but index is from 0
                 stop = this_original_task_file_length - 1
 
@@ -5123,7 +6042,7 @@ def do_task_please(
 
                 # start/reset error log
                 error_log = []
-                
+
                 # the length of this list is the goal
                 retry_or_error_event_counter_list = []
 
@@ -5180,6 +6099,7 @@ def do_task_please(
                         error_comment_data_lookup_table_field_name,
                         function_test_cases__field_name,
                         function_name__field_name,
+                        "programming_language",
                     ]
 
                     # Step 1: Extract the JSON object from the specified line
@@ -5193,9 +6113,13 @@ def do_task_please(
                         specific_fields = extract_specific_fields(
                             json_object, fields_of_interest
                         )
-                        print("\nspecific_fields[] -> Extracted Fields:", specific_fields)
+                        print(
+                            "\nspecific_fields[] -> Extracted Fields:", specific_fields
+                        )
                     else:
-                        print("\nExit here, stop waiting for Godot. No JSON object found at the specified line.")
+                        print(
+                            "\nExit here, stop waiting for Godot. No JSON object found at the specified line."
+                        )
                         task_ok_flag = True
                         break
 
@@ -5213,7 +6137,6 @@ def do_task_please(
                     else:
                         error_comment_data_lookup_table = None
 
-
                     if "options" in specific_fields:
                         these_original_task_options = specific_fields[
                             options_field_name
@@ -5227,13 +6150,10 @@ def do_task_please(
                         correct_option = specific_fields[scoring_field_name]
                         print(f"correct_option -> {correct_option}")
                     elif function_writing:
-                        correct_option = 'pass'
+                        correct_option = "pass"
                     else:
                         correct_option = None
-                    
 
-
-                    
                     if these_original_task_options:
                         task_summary = f"Task: {this_task}, Options: {pretty_print_list(these_original_task_options)}"
                     else:
@@ -5244,25 +6164,29 @@ def do_task_please(
                         f"these_original_task_options -> {these_original_task_options}"
                     )
                     print(f"task_summary -> {task_summary}")
-                    
-                    
+
                     # code
                     if function_test_cases__field_name in specific_fields:
-                        test_cases = specific_fields[
-                            function_test_cases__field_name
-                        ]
+                        test_cases = specific_fields[function_test_cases__field_name]
                         print(f"test_cases -> {test_cases}{type(test_cases)}")
                     else:
-                        test_cases = None        
-                    
+                        test_cases = None
+
                     if function_name__field_name:
-                        function_name = specific_fields[
-                            function_name__field_name
-                        ]
-                        print(f"function_name -> {function_name}{type(function_name)}")                        
+                        function_name = specific_fields[function_name__field_name]
+                        print(f"function_name -> {function_name}{type(function_name)}")
                     else:
                         function_name = None
+
                     
+                    # programming_language for code test
+                    if 'programming_language' in specific_fields:
+                        programming_language = specific_fields['programming_language']
+                        print(f"test_cases -> {test_cases}{type(test_cases)}")
+                    else:
+                        programming_language = None
+
+
                     ##############################
                     ##############################
                     # option choice randomization
@@ -5274,31 +6198,35 @@ def do_task_please(
                     randomized_option_list = []
                     original_to_randomized_lookup = {}
                     randomized_to_original_lookup = {}
-                    
-                    
 
-                    
                     # if there are options and you want to randomize them
-                    if (randomize_option_choices is True) and these_original_task_options:
+                    if (
+                        randomize_option_choices is True
+                    ) and these_original_task_options:
                         print("\nRandomizing Task Option Choices")
-                                                
-                        randomized_option_list, original_to_randomized_lookup, randomized_to_original_lookup = randomize_list(these_original_task_options)
-                    
+
+                        (
+                            randomized_option_list,
+                            original_to_randomized_lookup,
+                            randomized_to_original_lookup,
+                        ) = randomize_list(these_original_task_options)
+
                         displayed_option_choices = randomized_option_list
 
-                        print(f"""
-                            
+                        print(
+                            f"""
+
                             these_original_task_options   -> {these_original_task_options}
                             randomized_option_list        -> {randomized_option_list}
-                            
+
                             original_to_randomized_lookup -> {original_to_randomized_lookup}
                             randomized_to_original_lookup -> {randomized_to_original_lookup}
-                            
-                            """)
-                                                            
+
+                            """
+                        )
+
                     else:
                         displayed_option_choices = these_original_task_options
-
 
                     # make empty conversation
                     # reset context history for new 'conversation' about translation
@@ -5405,30 +6333,30 @@ def do_task_please(
                         """
 
                         if function_writing:
+                            ############
+                            # Pipes |||
+                            ############
+                            if task_mode_output_structure_mode == "markdown":
                                 ############
-                                # Pipes |||
+                                # Open Task: use context dict list
                                 ############
-                                if task_mode_output_structure_mode == "markdown":
-                                    ############
-                                    # Open Task: use context dict list
-                                    ############
-                                    context_history = f"""
+                                context_history = f"""
 
                                     {this_task}
 
-                                    Put your python code in markdown format (three pips)
+                                    Put your {programming_language} code in markdown format (three pips)
                                     without hard-coding any answers into the function.
-                                    
+
                                     Write any other comments or plans before you write the function 
-                                    and outside of the python markdown.
+                                    and outside of the {programming_language} markdown.
                                     """
-                                    
-                                else:
-                                    print(
-                                        f"""not multiple-choice exit: prompt selection 1: option problem task_mode_output_structure_mode {task_mode_output_structure_mode}"""
-                                    )
-                                    sys.exit()
- 
+
+                            else:
+                                print(
+                                    f"""not multiple-choice exit: prompt selection 1: option problem task_mode_output_structure_mode {task_mode_output_structure_mode}"""
+                                )
+                                sys.exit()
+
                         #############
                         # if context
                         #############
@@ -5473,8 +6401,6 @@ def do_task_please(
                                     f"""not function not multiple-choice exit: prompt selection 1: option problem task_mode_output_structure_mode {task_mode_output_structure_mode}"""
                                 )
                                 sys.exit()
-
-                            
 
                         ################
                         # if NO context
@@ -5706,7 +6632,9 @@ def do_task_please(
                                 retry_or_error_event_counter_list,
                                 error_log,
                                 test_cases,
-                                function_name)
+                                function_name,
+                                programming_language,
+                            )
                         )
 
                         # # remove overt duplicates
@@ -5745,8 +6673,8 @@ def do_task_please(
                         print(
                             f"list_of_ranked_choice_options -> {list_of_ranked_choice_options}"
                         )
-                        
-                        if function_writing and (task_response_string == 'pass'):
+
+                        if function_writing and (task_response_string == "pass"):
                             print("Pass: Made function, ok to move on.")
                             break
 
@@ -6049,7 +6977,9 @@ def do_task_please(
                                         else:  # if len of list is wrong
                                             while_counter += 1
                                             task_fail_counter += 1
-                                            retry_or_error_event_counter_list.append(True)
+                                            retry_or_error_event_counter_list.append(
+                                                True
+                                            )
                                             error_log.append("length of list is wrong.")
                                             print("len of list is wrong")
                                             print(
@@ -6090,8 +7020,11 @@ def do_task_please(
                     """
 
                     # if there are options and you want to randomize them
-                    if (randomize_option_choices is True) and these_original_task_options:
-                        print(f""" Inspection
+                    if (
+                        randomize_option_choices is True
+                    ) and these_original_task_options:
+                        print(
+                            f""" Inspection
 
                         these_original_task_options   -> {these_original_task_options}
                         randomized_option_list        -> {randomized_option_list}
@@ -6100,17 +7033,19 @@ def do_task_please(
                         randomized_to_original_lookup -> {randomized_to_original_lookup}
 
                         Original selected_option      -> {selected_option}
-                        """)
-                                                                        
-                                                                                                                                                
+                        """
+                        )
+
                         if selected_option is not None:
-                            selected_option = randomized_to_original_lookup[selected_option]
-                    
-                            print(f""" 
+                            selected_option = randomized_to_original_lookup[
+                                selected_option
+                            ]
+
+                            print(
+                                f""" 
                             selected_option               -> {selected_option}
-                            """) 
-
-
+                            """
+                            )
 
                     if error_comment_data_lookup_table:
                         # get task failure comment
@@ -6130,7 +7065,7 @@ def do_task_please(
                             """
                         )
 
-                    else: 
+                    else:
                         task_failure_comment = ""
 
                     # default
@@ -6140,14 +7075,14 @@ def do_task_please(
                     selected_option = str(selected_option)
                     correct_option = str(correct_option)
 
-                    
                     # for write function
-                    if function_writing and (selected_option == 'pass'):
+                    if function_writing and (selected_option == "pass"):
                         score = 1
 
                     # if multiple choice and should check answer:
                     elif (
-                        task_mode_validate_the_answer and task_mode_answer_option_choices_provided_boolean
+                        task_mode_validate_the_answer
+                        and task_mode_answer_option_choices_provided_boolean
                     ):
                         print(
                             f"selected_option -> {selected_option} type -> {type(selected_option)}"
@@ -6160,7 +7095,9 @@ def do_task_please(
                             print("Score!")
                             score = 1
                         else:
-                            print(f"Oops: selected_option -> {selected_option} vs. correct_option -> {correct_option}")
+                            print(
+                                f"Oops: selected_option -> {selected_option} vs. correct_option -> {correct_option}"
+                            )
                             score = 0
 
                         # making csv row
@@ -6171,16 +7108,14 @@ def do_task_please(
                     Add question order randomization to formatting notes.
                     """
                     formatting_notes = ""
-                    
+
                     if randomize_option_choices is True:
                         formatting_notes += str(randomize_option_choices)
-                    
-                    
-                    formatting_notes = replace_special_characters_with_text(
+
+                    formatting_notes = replace_special_characters_with_text_swap(
                         formatting_notes
                     )
 
-                    
                     # if open-answer and should check answer:
                     """
                     If open answer contains
@@ -6209,21 +7144,21 @@ def do_task_please(
                         # making csv row
                         print("with score: making csv row...")
 
-                    safe_task_attempt_log = replace_special_characters_with_text(
+                    safe_task_attempt_log = replace_special_characters_with_text_swap(
                         draft_task_attempt_log
                     )
 
-                    safe_question_task_prompt = replace_special_characters_with_text(
-                        question_task_prompt
+                    safe_question_task_prompt = (
+                        replace_special_characters_with_text_swap(question_task_prompt)
                     )
 
-                    safe_task_from_instructions = replace_special_characters_with_text(
-                        this_task
+                    safe_task_from_instructions = (
+                        replace_special_characters_with_text_swap(this_task)
                     )
 
                     if error_log:
-                        error_log_safe_string = replace_special_characters_with_text(
-                            error_log
+                        error_log_safe_string = (
+                            replace_special_characters_with_text_swap(error_log)
                         )
 
                     else:  # if error log is empty
@@ -6241,7 +7176,7 @@ def do_task_please(
                     duration_of_single_task = duration_min_sec(
                         start_time_whole_single_task, end_time_whole_single_task
                     )
-                    
+
                     retry_counter = len(retry_or_error_event_counter_list)
 
                     # turn into min, sec
@@ -6265,7 +7200,7 @@ def do_task_please(
                         readable_timestamp,
                     ]
 
-                    # answer_row = f'"{score}", "{this_row_or_line_number}", "{selected_option}", "{correct_option}", "{use_this_model}", "{this_original_task_file}", "{task_from_instructions}", "{question_task_prompt}", "{list_of_ranked_choice_options}", "{replace_special_characters_with_text(draft_task_attempt_log)}", "{readable_timestamp}"\n'
+                    # answer_row = f'"{score}", "{this_row_or_line_number}", "{selected_option}", "{correct_option}", "{use_this_model}", "{this_original_task_file}", "{task_from_instructions}", "{question_task_prompt}", "{list_of_ranked_choice_options}", "{replace_special_characters_with_text_swap(draft_task_attempt_log)}", "{readable_timestamp}"\n'
                     # print(f"answer_row -> {answer_row}")
 
                     # answer_row = strip_newlines_and_spaces(answer_row)
@@ -6315,7 +7250,7 @@ def do_task_please(
 
                     # making csv row
                     print("if not task_ok_flag: making csv row...")
-                    # answer_row = f'"fail", "{this_row_or_line_number}", "fail", "{use_this_model}", "{this_original_task_file}", "{task_from_instructions}", "{question_task_prompt}", "{list_of_ranked_choice_options}", "{replace_special_characters_with_text(draft_task_attempt_log)}", "{readable_timestamp}"\n'
+                    # answer_row = f'"fail", "{this_row_or_line_number}", "fail", "{use_this_model}", "{this_original_task_file}", "{task_from_instructions}", "{question_task_prompt}", "{list_of_ranked_choice_options}", "{replace_special_characters_with_text_swap(draft_task_attempt_log)}", "{readable_timestamp}"\n'
                     # # print(f"answer_row -> {answer_row}")
                     # answer_row = strip_newlines_and_spaces(answer_row)
                     # answer_row = answer_row + "\n"
@@ -6334,16 +7269,16 @@ def do_task_please(
                     #     csvfile.write(answer_row)
 
                     # nicely format some fields
-                    safe_task_attempt_log = replace_special_characters_with_text(
+                    safe_task_attempt_log = replace_special_characters_with_text_swap(
                         draft_task_attempt_log
                     )
 
-                    safe_question_task_prompt = replace_special_characters_with_text(
-                        question_task_prompt
+                    safe_question_task_prompt = (
+                        replace_special_characters_with_text_swap(question_task_prompt)
                     )
 
-                    safe_task_from_instructions = replace_special_characters_with_text(
-                        this_task
+                    safe_task_from_instructions = (
+                        replace_special_characters_with_text_swap(this_task)
                     )
 
                     just_model_file_name = os.path.basename(use_this_model)
@@ -6355,10 +7290,8 @@ def do_task_please(
 
                     task_failure_comment = "no answer given"
 
-                    
                     retry_counter = len(retry_or_error_event_counter_list)
-                    
-                    
+
                     # replace some fields with 'fail'
                     list_of_items_to_write_to_csv = [
                         "fail",
@@ -6392,6 +7325,36 @@ def do_task_please(
                 # save file
                 ##########################
                 print("All done? Anyone here...hello? What was that? Is someone")
+
+
+
+
+# #######################
+# # demo rust code tests
+# #######################
+
+# extracted_code = """
+# fn multiply(a: f64, b: f64, c: f64) -> f64 {
+#     a * b * c
+# }
+# """
+
+# test_cases = [
+#     {"input": [4.0, 5.0, 2.0], "expected_output": 40.0},
+#     {"input": [3.5, 2.0, 1.5], "expected_output": 10.5},
+#     {"input": [2.0, 2.0, 2.0], "expected_output": 8.0},
+#     {"input": [1.0, 1.0, 1.0], "expected_output": 1.0}
+# ]
+
+# function_name = "multiply"
+
+# score, stdout, stderr = run_rust_code(extracted_code, test_cases, function_name, dependencies=None)
+
+# print('score', score)
+# print('out', stdout)
+# print('err', stderr)
+
+
 
 
 # Option Notes
@@ -6432,8 +7395,6 @@ use_this_model = "mistral-tiny"
 #######################
 use_this_model = "claude-3-opus-20240229"
 use_this_model = "claude-2.1"
-
-
 
 
 ###########################
@@ -6518,7 +7479,7 @@ task_file_config_dic_list = [
     #     "scoring_field_name": "answer_from_index_start_at_1",
     #     "error_comment_data_lookup_table_field_name": "error_comment_data_lookup_table",
     #     "answer_option_choices_provided": True,
-    #     "randomize_option_choices": True, 
+    #     "randomize_option_choices": True,
     #     "validate_the_answer": True,
     #     "use_history_context_dict_list": False,
     #     "system_instructions": False,
@@ -6542,7 +7503,7 @@ task_file_config_dic_list = [
     #     "scoring_field_name": "answer_from_index_start_at_1",
     #     "error_comment_data_lookup_table_field_name": None,
     #     "answer_option_choices_provided": True,
-    #     "randomize_option_choices": True, 
+    #     "randomize_option_choices": True,
     #     "validate_the_answer": True,
     #     "use_history_context_dict_list": False,
     #     "system_instructions": False,
@@ -6577,8 +7538,35 @@ task_file_config_dic_list = [
     #     "this_range_inclusive": 2,
     #     "use_offset_and_range": True,
     # },
+    # {
+    #      "file_name": "short_code_writing_test_set_1.jsonl",
+    #      "file_type": ".jsonl",
+    #      "header_exits": False,
+    #      "file_structure": "",
+    #      "index_of_task": None,
+    #      "index_of_options": None,
+    #      # Fields
+    #      "task_field_name": "task",
+    #      "options_field_name": "options",
+    #      "scoring_field_name": "answer_from_index_start_at_1",
+    #      "error_comment_data_lookup_table_field_name": None,
+    #      "answer_option_choices_provided": False,
+    #      "randomize_option_choices": False,
+    #      "validate_the_answer": True,
+    #      "use_history_context_dict_list": False,
+    #      "system_instructions": False,
+    #      "function_writing": True,
+    #      "function_test_cases__field_name": "test_cases",
+    #      "function_name__field_name": "function_name",
+    #      "output_structure_mode": "markdown",
+    #      "input_state_context_mode": "one_string",
+    #      "ranked_choice_output_structure_mode": "pipes",
+    #      "this_offset": 0,
+    #      "this_range_inclusive": 1,
+    #      "use_offset_and_range": False,
+    #  },
     {
-        "file_name": "code_writing_test_set_5.jsonl",
+        "file_name": "short_code_writing_test_set_8.jsonl",
         "file_type": ".jsonl",
         "header_exits": False,
         "file_structure": "",
@@ -6590,15 +7578,13 @@ task_file_config_dic_list = [
         "scoring_field_name": "answer_from_index_start_at_1",
         "error_comment_data_lookup_table_field_name": None,
         "answer_option_choices_provided": False,
-        "randomize_option_choices": False, 
+        "randomize_option_choices": False,
         "validate_the_answer": True,
         "use_history_context_dict_list": False,
         "system_instructions": False,
-        
         "function_writing": True,
         "function_test_cases__field_name": "test_cases",
-        "function_name__field_name": "function_name",     
-
+        "function_name__field_name": "function_name",
         "output_structure_mode": "markdown",
         "input_state_context_mode": "one_string",
         "ranked_choice_output_structure_mode": "pipes",
@@ -6606,35 +7592,6 @@ task_file_config_dic_list = [
         "this_range_inclusive": 1,
         "use_offset_and_range": False,
     },
-   # {
-   #      "file_name": "short_code_writing_test_set_1.jsonl",
-   #      "file_type": ".jsonl",
-   #      "header_exits": False,
-   #      "file_structure": "",
-   #      "index_of_task": None,
-   #      "index_of_options": None,
-   #      # Fields
-   #      "task_field_name": "task",
-   #      "options_field_name": "options",
-   #      "scoring_field_name": "answer_from_index_start_at_1",
-   #      "error_comment_data_lookup_table_field_name": None,
-   #      "answer_option_choices_provided": False,
-   #      "randomize_option_choices": False, 
-   #      "validate_the_answer": True,
-   #      "use_history_context_dict_list": False,
-   #      "system_instructions": False,
-        
-   #      "function_writing": True,
-   #      "function_test_cases__field_name": "test_cases",
-   #      "function_name__field_name": "function_name",     
-
-   #      "output_structure_mode": "markdown",
-   #      "input_state_context_mode": "one_string",
-   #      "ranked_choice_output_structure_mode": "pipes",
-   #      "this_offset": 0,
-   #      "this_range_inclusive": 1,
-   #      "use_offset_and_range": False,
-   #  },
 ]
 
 #####################
@@ -6657,8 +7614,12 @@ retry_x_times = 2
 list_of_models = ["llamacorn", "tinyllama", "stablelm-zephyr-3b"]
 list_of_models = ["mistral-7b-instruct"]
 # list_of_models = ["llamacorn", "tinyllama"]
-# list_of_models = ["llamacorn"]
+list_of_models = ["wizardcoder-python-13b"]
 # list_of_models = ["tinyllama", "mistral-7b-instruct", "stablelm-zephyr-3b"]
+list_of_models = ["llamacorn", "dolphin-2_6-phi", "codeninja-1.0-openchat"]
+# list_of_models = ["llamacorn", "mistral-7b-instruct"]
+list_of_models = ["llamacorn"]
+# list_of_models = ["llamacorn", "dolphin-2_6-phi", "codeninja-1.0-openchat", "mistral-7b-instruct"]
 
 ######
 # Run
@@ -6668,9 +7629,9 @@ if __name__ == "__main__":
     message = f"""
     These are the models you are slated to run,
     as specified in your list in the do_tasks.py file, at the bottom.
- 
+
        list_of_models = {list_of_models}
-        
+
     Here are the possible models:
     {print_find_all_models(path="jan/models/")}
 
@@ -6708,3 +7669,6 @@ if __name__ == "__main__":
     # make html report
     html_for_all_reports()
     html_for_all_score_tallies()
+    
+    
+    
