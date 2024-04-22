@@ -388,6 +388,10 @@ def extract_code_from_markdown(markdown_text, function_name):
         
     if match: 
         print(f"\n found this code: {match} \n")
+        
+        
+        cleaned_match = match.replace("input(", "error, python user-input-method is not allowed")
+        
         return match
 
     return None
@@ -666,7 +670,7 @@ def run_rust_code(extracted_code, testcases_list, function_name, dependencies=No
         output pass/fail (or equivilant)
     7. get test result (passed or failed), stdout, stderr
     8. remove coding_challenge dir
-    9. Return 'pass' or 'fail' with stdout, stderr
+    9. Return "pass" or 'fail' with stdout, stderr
     """
     stdout = ''
     stderr = ''
@@ -790,8 +794,8 @@ def run_rust_code(extracted_code, testcases_list, function_name, dependencies=No
             
             if result == "ok" and failed == 0:
                 print("All tests passed!")
-                pass_fail_result = 'pass'
-                stdout = 'pass'
+                pass_fail_result = "pass"
+                stdout = "pass"
                 stderr = ''
             else:
                 print(f"Tests failed. Passed: {passed}, Failed: {failed}")
@@ -811,6 +815,10 @@ def run_rust_code(extracted_code, testcases_list, function_name, dependencies=No
             print("error_set", error_set_string)
             stderr = error_set_string
 
+        # if pass_fail_result == "pass":
+        #     working_solution_list.append(extracted_code)
+         
+        
         print(f"returning")
         print(f"pass_fail_result -> {pass_fail_result}")
         print(f"stdout -> {stdout}")
@@ -896,7 +904,11 @@ def run_code_in_subprocess(
                 stdout -> {stdout}
                 stderr -> {stderr}""")
             
-            if score == 'pass':
+            if score == "pass":
+
+                # # add working code for report
+                # working_solution_list.append(extracted_code)
+                                
                 process_proxy_return_dict = {
                     'stdout': score,
                     'stderr': stdout + stderr
@@ -1001,6 +1013,8 @@ def pass_fail_unit_test_function__stdout_stderr(
     
     if not extracted_code:
         print('warning, no code extracted')
+        error_log.append('warning, no code extracted')
+        retry_or_error_event_counter_list.append(True)
         return False, f"This is not code correctly formated in markdown: {code_markdown}"
 
     if programming_language == 'rust':
@@ -1020,12 +1034,17 @@ def pass_fail_unit_test_function__stdout_stderr(
         stdout = rust_result['stdout']
         stderr = rust_result['stderr']
 
+        print(f"len(stdout) -> {len(stdout)}")
+        print(f"len(stderr) -> {len(stderr)}")
+        
         # log error if fail
         if rust_result['stdout'] == 'fail':
             print("rust: No stdout found. Fail as error.")
             stdout = False
-            error_log.append(rust_result['stderr'])
+            stderr = "response was incoherent explosion"
 
+            error_log.append(rust_result['stderr'])
+            retry_or_error_event_counter_list.append(True)
         # return no stdout if error or fail
         return stdout, stderr
     
@@ -1071,7 +1090,7 @@ def pass_fail_unit_test_function__stdout_stderr(
                 + stderr
                 + ", stdout: "
                 + stdout
-                + "Try again: "
+                + " Try again: "
             )
 
 
@@ -1083,6 +1102,7 @@ def pass_fail_unit_test_function__stdout_stderr(
             if not stdout:
                 print("No stdout found. Fail as error.")
                 error_log.append(stderr)
+                retry_or_error_event_counter_list.append(True)
                 return False, stderr_plus
 
             actual_output = stdout
@@ -1090,9 +1110,11 @@ def pass_fail_unit_test_function__stdout_stderr(
         except Exception as e:
             traceback.print_exc()
             error_message = str(e)
+            error_log.append(error_message)
+            retry_or_error_event_counter_list.append(True)
             return False, error_message
 
-        # Compare the actual_output output with the expected output
+        # Compare the actual_output output with the expected output 
         try:
             print('Valid-ish stdout:')
             print(f"expected_output -> {expected_output} {type(expected_output)}")
@@ -1953,7 +1975,7 @@ def html_for_all_reports():
     clean_timestamp = date_time.strftime("%Y%m%d%H%M%S%f")
 
     target_csv_file_sources_dir = "task_set_results_files"
-    report_destination = f"task_set_results_files/HTML_summary_{clean_timestamp}.html"
+    report_destination = f"task_set_results_files/HTML_taskset_results_summary_{clean_timestamp}.html"
 
     make_html_report(target_csv_file_sources_dir, report_destination)
 
@@ -4025,11 +4047,13 @@ def call_api_within_structure_check(
                 response = configies_dict["pipeline_mode"](
                     context_history, parameter_dict, configies_dict
                 )
-                print(response[0])
-                print(response[1])
-                print(response[2])
+                print("\nin call_api_within_structure_check()...")
+                print(f"response[0] -> {response[0]}")
+                print(f"response[1] -> {response[1]}")
+                print(f"response[2] -> {response[2]}")
+                
                 dict_str = response[2]
-
+                
             ################
             # for cloud api
             ################
@@ -4096,6 +4120,7 @@ def general_task_call_api_within_structure_check(
     this_task_config_dict,
     retry_or_error_event_counter_list,
     error_log,
+    working_solution_list,
     test_cases=None,
     function_name=None,
     programming_language=None,
@@ -4137,9 +4162,11 @@ def general_task_call_api_within_structure_check(
     #     "mistral7b",
     # ]
 
-    error_message_list_grab_last = []
+    error_message_list_for_loop__grab_use_last = []
 
     while (not json_ok_flag) and (retry_counter < retry_x_times):
+    
+        print(f"starting while loop, retry_counter/retry_x_times is -> {retry_counter}/{retry_x_times}")
 
         ####################
         # get a translation
@@ -4152,8 +4179,8 @@ def general_task_call_api_within_structure_check(
 
         Note: pathways other than writing code might use this too.
         """
-        if error_message_list_grab_last and function_writing:
-            context_history = error_message_list_grab_last[0] + context_history
+        if error_message_list_for_loop__grab_use_last and function_writing:
+            context_history = error_message_list_for_loop__grab_use_last[-1] + context_history
 
         try:
             # check json structure
@@ -4194,7 +4221,13 @@ def general_task_call_api_within_structure_check(
                 print(response[2])
                 dict_str = response[2]
 
-                draft_task_attempt_log.append(response)
+                # check for exploding model, too long response
+                if ( len(response[0]) + len(response[1]) + len(response[2]) ) > 4444:
+                    print(f"Model exploded. Output Length -> {len(dict_str)}")
+                    draft_task_attempt_log.append("model-exploded")
+                    
+                else:
+                    draft_task_attempt_log.append(response)
 
             ################
             # for cloud api
@@ -4254,31 +4287,51 @@ def general_task_call_api_within_structure_check(
             #     error_log -> {error_log} {type(error_log)}
 
             #     """)
-
-            task_response_string, error_message = (
-                pass_fail_unit_test_function__stdout_stderr(
-                    code_markdown=dict_str,
-                    test_cases=test_cases,
-                    function_name=function_name,
-                    retry_or_error_event_counter_list=retry_or_error_event_counter_list,
-                    error_log=error_log,
-                    programming_language=programming_language,
-                    dependencies=None,
+            
+            ###############################################
+            # check for exploding model, too long response
+            ###############################################
+            if len(dict_str) > 4444:
+                print(f"\nError Caught, Model exploded. Output Length -> {len(dict_str)}")
+                error_message_list_for_loop__grab_use_last.append("model-exploded")
+                error_log.append("model-exploded")
+                error_message = "model-exploded"
+                
+                task_response_string = None    
+                dict_str = None        
+    
+        
+            if dict_str:
+                task_response_string, error_message = (
+                    pass_fail_unit_test_function__stdout_stderr(
+                        code_markdown=dict_str,
+                        test_cases=test_cases,
+                        function_name=function_name,
+                        retry_or_error_event_counter_list=retry_or_error_event_counter_list,
+                        error_log=error_log,
+                        programming_language=programming_language,
+                        dependencies=None,
+                    )
                 )
-            )
-            print(f"""
-                general_task_call_api_within_structure_check pass_fail_unit_test_function__stdout_stderr 
-                task_response_string -> {task_response_string}
-                """)
-            print(f"error_message -> {error_message}")
 
-            if task_response_string == "pass":
-                return task_response_string
+                print(f"""
+                    general_task_call_api_within_structure_check pass_fail_unit_test_function__stdout_stderr 
+                    task_response_string -> {task_response_string}
+                    """)
+                print(f"error_message -> {error_message}")
 
-            else:
-                error_message_list_grab_last.append(error_message)
-                # retry_counter += 1
-                task_response_string = None
+                if task_response_string == "pass":
+                    extracted_code = extract_code_from_markdown(dict_str, function_name)
+                    # TODO: maybe make this...extracted
+                    working_solution_list.append(extracted_code)
+                    return task_response_string
+
+                else:
+                    error_log.append(error_message)
+                    error_message_list_for_loop__grab_use_last.append(error_message)
+                    
+                    # retry_counter += 1
+                    task_response_string = None
 
         else:
             task_response_string = task_check_structure_of_response(
@@ -4296,8 +4349,11 @@ def general_task_call_api_within_structure_check(
         else:
             retry_counter += 1
             print(
-                f"\n\ngeneral_task_call_api_within_structure_check in while retry_counter -> {retry_counter}\n"
-            )
+                f"""\n
+                general_task_call_api_within_structure_check in while 
+                this retry: retry_counter -> {retry_counter}
+                
+                """)
 
             if retry_counter > retry_x_times:
                 return False
@@ -4381,9 +4437,11 @@ def number_call_api_within_structure_check(
                 response = configies_dict["pipeline_mode"](
                     context_history, parameter_dict, configies_dict
                 )
-                print(response[0])
-                print(response[1])
-                print(response[2])
+                print("\n\nModel output (tuple) -> ")
+                print(f"response[0] -> {response[0]}")
+                print(f"response[1] -> {response[1]}")
+                print(f"response[2] -> {response[2]}")
+
                 dict_str = response[2]
 
             ################
@@ -5828,6 +5886,8 @@ def do_task_please(
             "--ctx-size": 500,  # Sets the size of the prompt context
         }
 
+    working_solution_list = []
+    
     ##################################
     # do_task_please Factory
     ##################################
@@ -6631,6 +6691,7 @@ def do_task_please(
                                 this_task_config_dict,
                                 retry_or_error_event_counter_list,
                                 error_log,
+                                working_solution_list,
                                 test_cases,
                                 function_name,
                                 programming_language,
@@ -7078,6 +7139,9 @@ def do_task_please(
                     # for write function
                     if function_writing and (selected_option == "pass"):
                         score = 1
+                        
+                        # add solution to report for coding
+                        selected_option = f"pass -> {working_solution_list[-1]}"
 
                     # if multiple choice and should check answer:
                     elif (
@@ -7125,7 +7189,7 @@ def do_task_please(
                     """
                     if task_mode_validate_the_answer and (
                         not task_mode_answer_option_choices_provided_boolean
-                    ):
+                    ) and not function_writing:
                         print("checking substring")
                         print(
                             f"selected_option -> {selected_option} type -> {type(selected_option)}"
@@ -7405,18 +7469,19 @@ use_this_model = "claude-2.1"
 
 # Tune Your Paramaters for llama.cpp
 parameter_dict = {
-    "--temp": 0.8,  # (default value is 0.8)
-    "--top-k": 40,  # (selection among N most probable. default: 40)
-    "--top-p": 0.9,  # (probability above threshold P. default: 0.9)
-    "--min-p": 0.05,  # (minimum probability threshold. default: 0.05)
-    "--seed": -1,  # seed, -1 is a random seed
-    "--tfs": 1,  # (tail free sampling with parameter z. default: 1.0) 1.0 = disabled
-    "--threads": 8,  # (~ set to number of physical CPU cores)
-    "--typical": 1,  # (locally typical sampling with parameter p  typical (also like ~Temperature) (default: 1.0, 1.0 = disabled).
-    "--mirostat": 2,  # (default: 0,  0= disabled, 1= Mirostat, 2= Mirostat 2.0)
+    "--temp": 0.8,      # (default value is 0.8)
+    "--top-k": 40,      # (selection among N most probable. default: 40)
+    "--top-p": 0.9,     # (probability above threshold P. default: 0.9)
+    "--min-p": 0.05,    # (minimum probability threshold. default: 0.05)
+    "--seed": -1,       # seed, -1 is a random seed
+    "--tfs": 1,         # (tail free sampling with parameter z. default: 1.0) 1.0 = disabled
+    "--threads": None,     # (~ set this to number of physical CPU cores, None may default to that)
+    "--typical": 1,     # (locally typical sampling with parameter p  typical (also like ~Temperature) (default: 1.0, 1.0 = disabled).
+    "--mirostat": 2,    # (default: 0,  0= disabled, 1= Mirostat, 2= Mirostat 2.0)
     "--mirostat-lr": 0.05,  # (Mirostat learning rate, eta.  default: 0.1)
     "--mirostat-ent": 3.0,  # (Mirostat target entropy, tau.  default: 5.0)
-    "--ctx-size": 500,  # Sets the size of the prompt context
+    "--ctx-size": 500,      # Sets the size of the prompt context
+    "--n-gpu-layers": 0,    # When compiled with GPU support, this option allows offloading some layers to the GPU for computation.
 }
 
 # Configure your task overall
@@ -7618,8 +7683,10 @@ list_of_models = ["wizardcoder-python-13b"]
 # list_of_models = ["tinyllama", "mistral-7b-instruct", "stablelm-zephyr-3b"]
 list_of_models = ["llamacorn", "dolphin-2_6-phi", "codeninja-1.0-openchat"]
 # list_of_models = ["llamacorn", "mistral-7b-instruct"]
-list_of_models = ["llamacorn"]
+list_of_models = ["codeninja-1.0-opench"]
 # list_of_models = ["llamacorn", "dolphin-2_6-phi", "codeninja-1.0-openchat", "mistral-7b-instruct"]
+list_of_models = ["llamacorn"]
+
 
 ######
 # Run
