@@ -5,7 +5,52 @@ import os
 from datetime import datetime
 
 
+def replace_text_with_special_characters_swapback(input_item):
+
+    if not isinstance(input_item, str):
+
+        input_item = str(input_item)
+
+    # Remove duplicate spaces
+    # input_item = re.sub(r"\s+", " ", input_item.strip())
+
+    # replacements = {
+    #     ",": "(comma)",
+    #     '"': "(double quote or inverted commas)",
+    #     "'": "(single quote or apostrophe)",
+    #     "[": "(left square bracket)",
+    #     "]": "(right square bracket)",
+    #     "{": "(left curly bracket)",
+    #     "}": "(right curly bracket)",
+    #     ":": "(colon)",
+    #     "\\n": "(newline)",
+    #     "\n": "(newline)",
+    # }
+
+    reverse_replacements = {
+        "(comma)": ",",
+        "(double quote or inverted commas)": '"',
+        "(single quote or apostrophe)": "'",
+        "(left square bracket)": "[",
+        "(right square bracket)": "]",
+        "(left curly bracket)": "{",
+        "(right curly bracket)": "}",
+        "(colon)": ":",
+        "(newline)": "\n",
+    }
+    
+    for char, replacement in replacements.items():
+        input_item = input_item.replace(char, replacement)
+
+    return input_item
+
 def make_html_report(target_csv_file_sources_dir, path_out):
+    """
+    Return error and instruction data to normal text.
+    
+    Todo
+    Maybe use set for error to remove duplicates...
+    """
 
     csv_files = glob.glob(os.path.join(target_csv_file_sources_dir, "*.csv"))
 
@@ -74,11 +119,13 @@ def make_html_report(target_csv_file_sources_dir, path_out):
                             task_file=html.escape(
                                 row["task_file"]),                            
                             task_from_instructions=html.escape(
-                                row["task_from_instructions"]),
+                                replace_text_with_special_characters_swapback(
+                                    row["task_from_instructions"])),
                             retry_counter=html.escape(
                                 row["retry_counter"]),
                             error_log=html.escape(
-                                row["error_log"]),
+                                replace_text_with_special_characters_swapback(
+                                    row["error_log"])),
                             duration_of_single_task=html.escape(
                                 row["duration_of_single_task"]),
                             readable_timestamp=html.escape(row["readable_timestamp"]),

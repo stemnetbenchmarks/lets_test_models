@@ -6,6 +6,10 @@ from datetime import datetime
 
 
 def make_score_tally_html_report(target_csv_file_sources_dir, path_out):
+    """
+    works with
+    html_for_all_score_tallies()
+    """
     csv_files = glob.glob(os.path.join(target_csv_file_sources_dir, "*.csv"))
 
     # get files only that say 'score report'
@@ -40,10 +44,21 @@ def make_score_tally_html_report(target_csv_file_sources_dir, path_out):
                 </tr>
         """
         for csv_file in csv_files:
+                        
             try:
                 with open(csv_file, "r") as csvfile:
                     csvreader = csv.DictReader(csvfile)
                     for row in csvreader:
+
+                        
+                        # remove the redundancy in the set list
+                        # Split the task_file string by comma and convert it to a set
+                        task_files = set(row["task_file"].split(", "))
+                        
+                        # Join the unique task files back into a comma-separated string
+                        row["task_file"] = ", ".join(task_files)
+
+                        
                         html_content += """
                             <tr>
                                 <td>{percent}</td>
@@ -60,7 +75,7 @@ def make_score_tally_html_report(target_csv_file_sources_dir, path_out):
                             time_stamp=html.escape(row["time_stamp"]),
                         )
             except Exception as e:
-                print(f"No dice on {csv_file} -> {e}")
+                print(f"make_score_tally_html_report(), No dice on {csv_file} -> {e}")
                 print("")
         html_content += """
             </table>
@@ -76,6 +91,10 @@ def make_score_tally_html_report(target_csv_file_sources_dir, path_out):
 
 
 def html_for_all_score_tallies():
+    """
+    works with
+    make_score_tally_html_report(target_csv_file_sources_dir, path_out)
+    """
     date_time = datetime.now()
     clean_timestamp = date_time.strftime("%Y%m%d%H%M%S%f")
     target_csv_file_sources_dir = "task_set_results_files"
